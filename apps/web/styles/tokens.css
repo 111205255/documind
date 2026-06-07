@@ -1,0 +1,190 @@
+/**
+ * DocuMind design tokens — synced from Figma frames 01 (Splash) & 02 (Login)
+ */
+
+:root {
+  /* Brand — coral → red gradient */
+  --brand-primary: #ff4d4d;
+  --brand-primary-hover: #ff3b3b;
+  --brand-primary-pressed: #e63535;
+  --brand-gradient-from: #ff6b4a;
+  --brand-gradient-to: #ff2e3b;
+  --brand-glow: rgba(255, 91, 74, 0.35);
+
+  /* Auth / marketing backgrounds */
+  --auth-bg: #ffffff;
+  --auth-glow-a: rgba(255, 200, 190, 0.55);
+  --auth-glow-b: rgba(255, 210, 200, 0.45);
+  --auth-feature-icon-bg: #f5f5f5;
+  --auth-feature-icon-border: transparent;
+  --auth-button-bg: #ffffff;
+  --auth-button-border: #e5e5e5;
+  --auth-button-text: #0a0a0a;
+  --auth-button-shadow: 0 2px 12px rgb(0 0 0 / 0.06);
+  --auth-dot-inactive: #d4d4d8;
+
+  /* Documents home (frames 03 & 04) */
+  --doc-page-bg: #ffffff;
+  --doc-search-bg: #f3f4f6;
+  --doc-search-border: #ebebeb;
+  --doc-card-bg: #ffffff;
+  --doc-card-shadow: 0 2px 16px rgb(0 0 0 / 0.06);
+  --doc-card-shadow-hover: 0 8px 24px rgb(0 0 0 / 0.1);
+  --doc-empty-icon-bg: #ffffff;
+  --doc-empty-icon-shadow: 0 8px 32px rgb(0 0 0 / 0.08);
+  --doc-fab-shadow: 0 8px 24px var(--brand-glow);
+  --doc-chevron: #c4c4c4;
+
+  /* Surfaces */
+  --surface-base: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #f5f5f5;
+  --surface-overlay: rgba(255, 255, 255, 0.92);
+  --surface-inverse: #0a0a0a;
+
+  /* Text */
+  --text-primary: #0a0a0a;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-inverse: #ffffff;
+  --text-brand: var(--brand-primary);
+  --text-footer: #9ca3af;
+
+  /* Borders */
+  --border-default: #e5e5e5;
+  --border-strong: #d4d4d4;
+  --border-focus: var(--brand-primary);
+
+  /* Semantic */
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Chat */
+  --chat-user-bg: var(--brand-primary);
+  --chat-user-text: #ffffff;
+  --chat-assistant-bg: var(--surface-raised);
+  --chat-assistant-text: var(--text-primary);
+
+  /* Citation */
+  --citation-bg: #fff1f0;
+  --citation-text: #c62828;
+  --citation-border: #ffcdd2;
+
+  /* Logo */
+  --logo-size-lg: 5.5rem;
+  --logo-size-md: 4.5rem;
+  --logo-radius: 1.375rem;
+  --logo-shadow: 0 12px 32px var(--brand-glow);
+
+  /* Focus ring */
+  --ring: var(--brand-primary);
+  --ring-offset: var(--surface-base);
+
+  /* Spacing */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-auth-button: 0.875rem;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08);
+  --shadow-card-hover: 0 12px 24px -8px rgb(0 0 0 / 0.12);
+
+  /* Typography */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-display: 2rem;
+
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Layout */
+  --mobile-max-width: 430px;
+  --header-height: 3.5rem;
+  --bottom-nav-height: 4rem;
+  --sheet-radius: var(--radius-2xl);
+  --auth-padding-x: 1.5rem;
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dark {
+  --auth-bg: #000000;
+  --auth-glow-a: rgba(80, 20, 20, 0.65);
+  --auth-glow-b: rgba(60, 15, 15, 0.5);
+  --auth-feature-icon-bg: #1a1a1a;
+  --auth-feature-icon-border: #2a2a2a;
+  --auth-button-bg: #1f2937;
+  --auth-button-border: #374151;
+  --auth-button-text: #ffffff;
+  --auth-button-shadow: 0 2px 16px rgb(0 0 0 / 0.4);
+  --auth-dot-inactive: #3f3f46;
+  --brand-glow: rgba(255, 80, 60, 0.25);
+
+  --doc-page-bg: #000000;
+  --doc-search-bg: #1a1a1a;
+  --doc-search-border: #2a2a2a;
+  --doc-card-bg: #141414;
+  --doc-card-shadow: 0 2px 16px rgb(0 0 0 / 0.35);
+  --doc-card-shadow-hover: 0 8px 28px rgb(0 0 0 / 0.5);
+  --doc-empty-icon-bg: #1a1a1a;
+  --doc-empty-icon-shadow: 0 8px 32px rgb(0 0 0 / 0.4);
+  --doc-fab-shadow: 0 8px 28px var(--brand-glow);
+  --doc-chevron: #52525b;
+
+  --surface-base: #000000;
+  --surface-raised: #111111;
+  --surface-sunken: #1a1a1a;
+  --surface-overlay: rgba(0, 0, 0, 0.92);
+
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-tertiary: #6b7280;
+  --text-footer: #6b7280;
+
+  --border-default: #27272a;
+  --border-strong: #3f3f46;
+
+  --citation-bg: #2a0a0a;
+  --citation-text: #ff8a80;
+  --citation-border: #4a1515;
+
+  --ring-offset: #000000;
+  --logo-shadow: 0 12px 40px var(--brand-glow);
+}

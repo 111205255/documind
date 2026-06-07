@@ -1,0 +1,62 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+.venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Expo / React Native
+apps/mobile/.expo/
+apps/mobile/.expo-test-bundle/
+apps/mobile/dist/
+apps/mobile/android/
+apps/mobile/ios/
+apps/mobile/.metro-health-check*
+
+# Next.js
+apps/web/.next/
+apps/web/out/
+apps/web/.vercel
+
+# Testing / coverage
+coverage/
+.pytest_cache/
+htmlcov/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Chroma / local data
+chroma_data/
+*.sqlite3
+
+# Docker
+.docker/
+
+# Build artifacts
+*.tsbuildinfo
+next-env.d.ts

@@ -1,0 +1,19 @@
+# Render Blueprint — import from repo root
+# Dashboard: New → Blueprint → connect GitHub → use this file
+services:
+  - type: web
+    name: documind-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini
+      - key: CHROMA_PERSIST_DIRECTORY
+        value: /app/chroma_data
+      - key: CORS_ORIGINS
+        value: https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000
