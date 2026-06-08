@@ -1,3 +1,4 @@
+import { formatApiError } from "../api-error";
 import { apiFetch } from "./fetch";
 
 export type ApiCitation = {
@@ -20,7 +21,7 @@ export async function askDocument(
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(detail || `Chat failed (${response.status})`);
+    throw new Error(formatApiError(detail) || `Chat failed (${response.status})`);
   }
 
   return response.json() as Promise<{ answer: string; citations: ApiCitation[] }>;

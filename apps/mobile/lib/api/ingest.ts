@@ -1,3 +1,4 @@
+import { formatApiError } from "../api-error";
 import { apiFetch } from "./fetch";
 import { supabase } from "../supabase/client";
 
@@ -16,7 +17,7 @@ export async function ingestDocumentForRag(documentId: string, file: File): Prom
   if (!response.ok) {
     await supabase.from("documents").update({ status: "failed" }).eq("id", documentId);
     const detail = await response.text();
-    throw new Error(detail || `Ingest failed (${response.status})`);
+    throw new Error(formatApiError(detail) || `Ingest failed (${response.status})`);
   }
 
   await supabase.from("documents").update({ status: "ready" }).eq("id", documentId);
