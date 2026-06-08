@@ -28,7 +28,7 @@ if ($LASTEXITCODE -ne 0) {
 
 $envFile = Join-Path $Backend '.env'
 if (-not (Test-Path $envFile)) {
-    Write-Host "Missing backend\.env - copy env.example and set OPENAI_API_KEY." -ForegroundColor Red
+    Write-Host "Missing backend\.env - copy env.example and set GOOGLE_API_KEY." -ForegroundColor Red
     exit 1
 }
 
@@ -53,7 +53,7 @@ if ($launchOut -match 'payment information|credit card|billing') {
     Pop-Location
     exit 1
 }
-& $Flyctl secrets set OPENAI_API_KEY=$openaiKey --stage
+& $Flyctl secrets set GOOGLE_API_KEY=$googleKey --stage
 $cors = 'https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000'
 & $Flyctl secrets set CORS_ORIGINS=$cors --stage
 $deployOut = & $Flyctl deploy --ha=false 2>&1 | Out-String

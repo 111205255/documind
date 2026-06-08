@@ -1,14 +1,14 @@
 from langchain_community.vectorstores import Chroma
 from langchain_core.documents import Document
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 from app.config import Settings
 
 
-def get_embeddings(settings: Settings) -> OpenAIEmbeddings:
-    return OpenAIEmbeddings(
-        api_key=settings.openai_api_key,
-        model="text-embedding-3-small",
+def get_embeddings(settings: Settings) -> GoogleGenerativeAIEmbeddings:
+    return GoogleGenerativeAIEmbeddings(
+        google_api_key=settings.google_api_key,
+        model=settings.gemini_embedding_model,
     )
 
 

@@ -10,7 +10,7 @@ def create_app() -> FastAPI:
 
     app = FastAPI(
         title="DocuMind API",
-        description="FastAPI + LangChain + ChromaDB RAG backend (Blueprint Step 4)",
+        description="FastAPI + LangChain + ChromaDB + Gemini RAG backend (Blueprint Step 4)",
         version="0.1.0",
     )
 

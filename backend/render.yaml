@@ -1,5 +1,4 @@
 # Deploy DocuMind API on Render (free tier)
-# Dashboard: New → Blueprint → connect this repo, root: backend
 services:
   - type: web
     name: documind-api
@@ -9,10 +8,12 @@ services:
     plan: free
     healthCheckPath: /api/v1/health
     envVars:
-      - key: OPENAI_API_KEY
+      - key: GOOGLE_API_KEY
         sync: false
-      - key: OPENAI_MODEL
-        value: gpt-4o-mini
+      - key: GEMINI_MODEL
+        value: gemini-2.0-flash
+      - key: GEMINI_EMBEDDING_MODEL
+        value: models/text-embedding-004
       - key: CHROMA_PERSIST_DIRECTORY
         value: /app/chroma_data
       - key: CORS_ORIGINS

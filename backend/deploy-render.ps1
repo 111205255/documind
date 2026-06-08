@@ -4,7 +4,11 @@
 $ErrorActionPreference = "Stop"
 $Root = Split-Path $PSScriptRoot -Parent
 $Backend = $PSScriptRoot
-$Gh = (Get-Command gh -ErrorAction SilentlyContinue)?.Source
+$Gh = Join-Path ${env:ProgramFiles} 'GitHub CLI\gh.exe'
+if (-not (Test-Path $Gh)) {
+    $cmd = Get-Command gh -ErrorAction SilentlyContinue
+    if ($cmd) { $Gh = $cmd.Source }
+}
 
 Write-Host "DocuMind API - Render deploy" -ForegroundColor Cyan
 Write-Host ""
@@ -12,18 +16,19 @@ Write-Host ""
 # --- Check OpenAI key in backend/.env ---
 $envFile = Join-Path $Backend '.env'
 if (-not (Test-Path $envFile)) {
-    Write-Host "Missing backend\.env - run .\backend\set-openai-key.ps1 first" -ForegroundColor Red
+    Write-Host "Missing backend\.env - run .\backend\set-gemini-key.ps1 first" -ForegroundColor Red
     exit 1
 }
-$openaiKey = ((Get-Content $envFile | Where-Object { $_ -match '^OPENAI_API_KEY=' } | Select-Object -First 1) -replace '^OPENAI_API_KEY=', '').Trim()
-if (-not $openaiKey) {
-    Write-Host "OPENAI_API_KEY is empty in backend\.env" -ForegroundColor Red
+$googleKey = ((Get-Content $envFile | Where-Object { $_ -match '^GOOGLE_API_KEY=' } | Select-Object -First 1) -replace '^GOOGLE_API_KEY=', '').Trim()
+if (-not $googleKey) {
+    Write-Host "GOOGLE_API_KEY is empty in backend\.env" -ForegroundColor Red
     exit 1
 }
 
 # --- Git commit (Render needs GitHub) ---
 Push-Location $Root
-$hasCommits = git rev-parse HEAD 2>$null
+$hasCommits = $null
+try { $hasCommits = git rev-parse HEAD 2>$null } catch {}
 if (-not $hasCommits) {
     Write-Host "Creating initial git commit..." -ForegroundColor Yellow
     git add -A
@@ -31,10 +36,7 @@ if (-not $hasCommits) {
 }
 
 # --- GitHub push ---
-if (-not $Gh) {
-    $Gh = "$env:ProgramFiles\GitHub CLI\gh.exe"
-}
-if (-not (Test-Path $Gh)) {
+if (-not $Gh -or -not (Test-Path $Gh)) {
     Write-Host "GitHub CLI (gh) not found. Install: winget install GitHub.cli" -ForegroundColor Red
     Pop-Location
     exit 1
@@ -43,12 +45,13 @@ if (-not (Test-Path $Gh)) {
 & $Gh auth status 2>&1 | Out-Null
 if ($LASTEXITCODE -ne 0) {
     Write-Host "Log in to GitHub first:" -ForegroundColor Yellow
-    Write-Host "  gh auth login"
+    Write-Host ('  & "' + $Gh + '" auth login')
     Pop-Location
     exit 1
 }
 
-$remoteUrl = git remote get-url origin 2>$null
+$remoteUrl = $null
+try { $remoteUrl = git remote get-url origin 2>$null } catch {}
 if (-not $remoteUrl) {
     Write-Host "Creating GitHub repo and pushing..." -ForegroundColor Yellow
     & $Gh repo create documind --public --source=. --remote=origin --push --description "DocuMind AI document chat"
@@ -75,13 +78,12 @@ Write-Host "=== Render dashboard (do these 4 steps) ===" -ForegroundColor Cyan
 Write-Host "1. Open Blueprint import (browser will open)"
 Write-Host "2. Connect GitHub repo: documind"
 Write-Host "3. Render detects render.yaml at repo root - click Apply"
-Write-Host "4. When prompted for OPENAI_API_KEY, paste the key from backend\.env"
+Write-Host "4. When prompted for GOOGLE_API_KEY, paste the key from backend\.env"
 Write-Host ""
 Write-Host "After deploy finishes (~5-10 min), copy the service URL and run:"
 Write-Host '  .\scripts\finish-production.ps1 -ApiUrl "https://documind-api.onrender.com"'
 Write-Host ""
-Write-Host "Your OpenAI key (copy for Render dashboard):" -ForegroundColor DarkGray
-Write-Host $openaiKey
+Write-Host "Copy GOOGLE_API_KEY from backend\.env when Render asks." -ForegroundColor DarkGray
 Write-Host ""
 
 Start-Process "https://dashboard.render.com/blueprints/new"

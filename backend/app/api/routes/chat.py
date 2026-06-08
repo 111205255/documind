@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.api.deps import require_openai, settings_dep
+from app.api.deps import require_gemini, settings_dep
 from app.config import Settings
 from app.schemas.chat import ChatRequest, ChatResponse
 from app.services.rag import answer_question
@@ -18,7 +18,7 @@ def chat(
 
     Returns answer text plus page citations from retrieved chunks.
     """
-    require_openai(settings)
+    require_gemini(settings)
 
     try:
         result = answer_question(

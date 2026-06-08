@@ -3,7 +3,7 @@ import uuid
 
 from langchain_core.documents import Document
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.config import Settings
 from app.schemas.chat import CitationOut
@@ -63,7 +63,7 @@ def answer_question(
     document_id: str,
     question: str,
 ) -> dict:
-    """Retrieve relevant chunks → OpenAI → answer with citations (Blueprint RAG)."""
+    """Retrieve relevant chunks → Gemini → answer with citations (Blueprint RAG)."""
     store = get_vector_store(settings)
     retriever = store.as_retriever(
         search_kwargs={
@@ -80,9 +80,9 @@ def answer_question(
         }
 
     context = _format_context(docs)
-    llm = ChatOpenAI(
-        api_key=settings.openai_api_key,
-        model=settings.openai_model,
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=settings.google_api_key,
+        model=settings.gemini_model,
         temperature=0.2,
     )
     prompt = ChatPromptTemplate.from_messages(

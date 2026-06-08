@@ -11,6 +11,7 @@ def health(settings: Settings = Depends(settings_dep)) -> dict:
     return {
         "status": "ok",
         "service": "documind-api",
-        "openai_configured": bool(settings.openai_api_key.strip()),
+        "gemini_configured": bool(settings.google_api_key.strip()),
+        "gemini_model": settings.gemini_model,
         "chroma_directory": settings.chroma_persist_directory,
     }

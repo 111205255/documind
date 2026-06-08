@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
-from app.api.deps import require_openai, settings_dep
+from app.api.deps import require_gemini, settings_dep
 from app.config import Settings
 from app.schemas.documents import IngestResponse, IngestTextRequest
 from app.services.rag import ingest_docx_bytes, ingest_pdf_bytes, ingest_text
@@ -39,7 +39,7 @@ async def ingest_document(
 
     Called after Step 3 upload to Supabase storage — pass the same `document_id`.
     """
-    require_openai(settings)
+    require_gemini(settings)
 
     data = await file.read()
     if not data:
@@ -84,7 +84,7 @@ def ingest_document_text(
     settings: Settings = Depends(settings_dep),
 ) -> IngestResponse:
     """Index plain text (dev/tests or pre-extracted content)."""
-    require_openai(settings)
+    require_gemini(settings)
 
     try:
         result = ingest_text(
