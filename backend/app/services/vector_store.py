@@ -9,6 +9,7 @@ def get_embeddings(settings: Settings) -> GoogleGenerativeAIEmbeddings:
     return GoogleGenerativeAIEmbeddings(
         google_api_key=settings.google_api_key,
         model=settings.gemini_embedding_model,
+        task_type="retrieval_document",
     )
 
 
