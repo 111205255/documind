@@ -27,6 +27,15 @@ def chat(
             question=body.question.strip(),
         )
     except Exception as e:
+        err = str(e)
+        if "429" in err or "quota" in err.lower():
+            raise HTTPException(
+                status_code=429,
+                detail=(
+                    "Gemini quota exceeded. Wait 30 seconds and retry. "
+                    "Set GEMINI_MODEL=gemini-2.5-flash on Render if using gemini-2.0-flash."
+                ),
+            ) from e
         raise HTTPException(status_code=500, detail=f"Chat failed: {e}") from e
 
     return ChatResponse(**result)

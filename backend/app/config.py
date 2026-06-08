@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     )
 
     google_api_key: str = ""
-    gemini_model: str = "gemini-2.0-flash"
+    gemini_model: str = "gemini-2.5-flash"
     gemini_embedding_model: str = "gemini-embedding-001"
 
     chroma_persist_directory: str = "./chroma_data"

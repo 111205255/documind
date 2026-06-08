@@ -1,13 +1,13 @@
-/** Browser calls same-origin proxy; server can hit backend directly. */
+/** Browser uses same-origin proxy (/api/rag/* → backend /api/v1/*). Server hits backend directly. */
 export function getApiUrl(): string {
   if (typeof window !== "undefined") {
     return "/api/rag";
   }
-  return (
+  const backend =
     process.env.RAG_API_URL?.replace(/\/$/, "") ??
     process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "") ??
-    "http://localhost:8000"
-  );
+    "http://localhost:8000";
+  return `${backend}/api/v1`;
 }
 
 export function isApiConfigured(): boolean {

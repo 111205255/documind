@@ -1,3 +1,4 @@
+import { formatApiError } from "@/lib/api-error";
 import { getApiUrl } from "@/lib/api-url";
 import type { Citation } from "@/types/chat";
 
@@ -33,7 +34,7 @@ export async function askDocument(
     throw new Error("AI backend is not configured (NEXT_PUBLIC_API_URL).");
   }
 
-  const response = await fetch(`${apiUrl}/api/v1/chat`, {
+  const response = await fetch(`${apiUrl}/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ document_id: documentId, question }),
@@ -41,7 +42,7 @@ export async function askDocument(
 
   if (!response.ok) {
     const detail = await response.text();
-    throw new Error(detail || `Chat failed (${response.status})`);
+    throw new Error(formatApiError(detail) || `Chat failed (${response.status})`);
   }
 
   const data = (await response.json()) as ChatApiResponse;

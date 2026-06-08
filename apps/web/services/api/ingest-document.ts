@@ -1,3 +1,4 @@
+import { formatApiError } from "@/lib/api-error";
 import { getApiUrl } from "@/lib/api-url";
 import { createClient } from "@/services/supabase/client";
 
@@ -23,7 +24,7 @@ export async function ingestDocumentForRag(
   const form = new FormData();
   form.append("file", file);
 
-  const response = await fetch(`${apiUrl}/api/v1/documents/${documentId}/ingest`, {
+  const response = await fetch(`${apiUrl}/documents/${documentId}/ingest`, {
     method: "POST",
     body: form,
   });
@@ -31,7 +32,7 @@ export async function ingestDocumentForRag(
   if (!response.ok) {
     await supabase.from("documents").update({ status: "failed" }).eq("id", documentId);
     const detail = await response.text();
-    throw new Error(detail || `Ingest failed (${response.status})`);
+    throw new Error(formatApiError(detail) || `Ingest failed (${response.status})`);
   }
 
   const result = (await response.json()) as IngestResult;
