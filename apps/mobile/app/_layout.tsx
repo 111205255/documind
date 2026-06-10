@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthGuard } from "../components/AuthGuard";
 import { NetworkGuard } from "../components/NetworkGuard";
 import { AuthProvider } from "../context/AuthContext";
 import { ThemeProvider, useTheme } from "../theme/ThemeContext";
@@ -35,9 +36,11 @@ export default function RootLayout() {
       <SafeAreaProvider>
         <ThemeProvider>
           <AuthProvider>
-            <NetworkGuard>
-              <RootStack />
-            </NetworkGuard>
+            <AuthGuard>
+              <NetworkGuard>
+                <RootStack />
+              </NetworkGuard>
+            </AuthGuard>
           </AuthProvider>
         </ThemeProvider>
       </SafeAreaProvider>

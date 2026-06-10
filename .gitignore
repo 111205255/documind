@@ -38,6 +38,7 @@ apps/web/.vercel
 coverage/
 .pytest_cache/
 htmlcov/
+apps/web/e2e/.auth/
 
 # IDE / OS
 .idea/

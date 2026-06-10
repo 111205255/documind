@@ -23,5 +23,6 @@ export function rowToListItem(row: DocumentRow): DocumentListItem {
     title: row.title,
     pageCount: row.page_count || 0,
     relativeTime: formatRelativeTime(row.created_at),
+    status: row.status,
   };
 }

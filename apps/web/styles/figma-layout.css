@@ -1,0 +1,79 @@
+@layer components {
+  .figma-page-title {
+    font-size: var(--text-page-title);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.025em;
+    line-height: var(--leading-tight);
+    color: var(--text-primary);
+  }
+
+  .figma-section-title {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .figma-card-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--leading-normal);
+    color: var(--text-primary);
+  }
+
+  .figma-meta {
+    font-size: var(--text-sm);
+    line-height: var(--leading-normal);
+    color: var(--text-secondary);
+  }
+
+  .figma-caption {
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+    color: var(--text-tertiary);
+  }
+
+  .figma-surface-card {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+  }
+
+  .figma-primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    height: var(--sidebar-upload-height);
+    padding-inline: 1.5rem;
+    border-radius: var(--radius-xl);
+    background: var(--brand-primary);
+    color: var(--text-inverse);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-semibold);
+    box-shadow: var(--doc-fab-shadow);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .figma-primary-btn:hover {
+    background: var(--brand-primary-hover);
+  }
+
+  .figma-primary-btn:active {
+    transform: scale(0.98);
+  }
+
+  .figma-user-bubble {
+    border-radius: var(--chat-bubble-radius);
+    border-bottom-right-radius: var(--chat-bubble-radius-tail);
+    background: var(--chat-user-bg);
+    color: var(--chat-user-text);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+}
+

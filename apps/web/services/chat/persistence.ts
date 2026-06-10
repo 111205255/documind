@@ -103,7 +103,10 @@ export async function saveMessage(
 
   await supabase
     .from("chat_threads")
-    .update({ updated_at: new Date().toISOString() })
+    .update({
+      updated_at: new Date().toISOString(),
+      last_message_preview: content.slice(0, 120),
+    })
     .eq("id", threadId);
 }
 
@@ -124,28 +127,33 @@ export async function listUserThreads(): Promise<ThreadListItem[]> {
 
   const { data: threads, error } = await supabase
     .from("chat_threads")
-    .select("id, document_id, title, updated_at")
+    .select("id, document_id, title, updated_at, last_message_preview")
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
   if (error || !threads?.length) return [];
 
-  const results: ThreadListItem[] = [];
-  for (const t of threads) {
-    const { data: msgs } = await supabase
-      .from("chat_messages")
-      .select("content")
-      .eq("thread_id", t.id)
-      .order("created_at", { ascending: false })
-      .limit(1);
+  return threads.map((t) => ({
+    id: t.id,
+    documentId: t.document_id,
+    title: t.title,
+    preview: t.last_message_preview?.slice(0, 80) || "No messages yet",
+    updatedAt: t.updated_at,
+  }));
+}
 
-    results.push({
-      id: t.id,
-      documentId: t.document_id,
-      title: t.title,
-      preview: msgs?.[0]?.content?.slice(0, 80) ?? "No messages yet",
-      updatedAt: t.updated_at,
-    });
-  }
-  return results;
+export async function deleteThread(threadId: string): Promise<void> {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Sign in required.");
+
+  const { error } = await supabase
+    .from("chat_threads")
+    .delete()
+    .eq("id", threadId)
+    .eq("user_id", user.id);
+
+  if (error) throw new Error(error.message);
 }

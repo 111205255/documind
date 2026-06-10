@@ -1,26 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { ScreenHeader } from "@/components/layout/screen-header";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Divider } from "@/components/ui/divider";
+import {
+  BellIcon,
+  ChevronRightIcon,
+  HelpIcon,
+  LockIcon,
+  LogoutIcon,
+  MoonIcon,
+} from "@/components/brand/icons";
+import { AnimatedToggle } from "@/components/ui/animated-toggle";
+import { FadeIn } from "@/components/motion/fade-in";
+import { StaggerItem, StaggerList } from "@/components/motion/stagger-list";
 import { ROUTES } from "@/lib/constants";
 import { createClient } from "@/services/supabase/client";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
-/** Frame 13 */
+/** Figma frame 13 */
 export function SettingsScreen() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const [email, setEmail] = useState<string | null>(null);
+  const { email, initials } = useCurrentUser();
+  const [displayEmail, setDisplayEmail] = useState<string | null>(null);
+  const [notifications, setNotifications] = useState(true);
 
   useEffect(() => {
     void createClient()
       .auth.getUser()
-      .then(({ data }) => setEmail(data.user?.email ?? null));
-  }, []);
+      .then(({ data }) => setDisplayEmail(data.user?.email ?? email));
+    const saved = localStorage.getItem("documind-notifications");
+    if (saved !== null) setNotifications(saved === "true");
+  }, [email]);
 
   const signOut = async () => {
     await createClient().auth.signOut();
@@ -28,44 +41,130 @@ export function SettingsScreen() {
     router.refresh();
   };
 
+  const displayName = displayEmail?.split("@")[0] ?? "Account";
+  const isDark = theme === "dark";
+
   return (
-    <>
-      <ScreenHeader title="Settings" subtitle="Profile & preferences" />
-      <Card className="mt-4 space-y-4">
-        <div>
-          <p className="font-medium text-[var(--text-primary)]">Account</p>
-          <p className="text-sm text-[var(--text-secondary)]">{email ?? "Not signed in"}</p>
-        </div>
-        <Divider />
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="font-medium text-[var(--text-primary)]">Appearance</p>
-            <p className="text-sm text-[var(--text-secondary)]">Theme: {theme ?? "system"}</p>
+    <div data-testid="settings-screen" className="max-w-2xl">
+      <FadeIn>
+        <h1 className="figma-page-title mb-10">Settings</h1>
+      </FadeIn>
+
+      <StaggerList style={{ gap: "var(--settings-card-gap)" }} className="flex flex-col">
+        <StaggerItem>
+          <div className="figma-surface-card p-5">
+            <div className="flex items-center gap-4">
+              <div
+                className="flex shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-lg font-bold text-white"
+                style={{
+                  width: "var(--settings-avatar-size)",
+                  height: "var(--settings-avatar-size)",
+                }}
+              >
+                {initials}
+              </div>
+              <div>
+                <p className="text-base font-semibold capitalize text-[var(--text-primary)]">
+                  {displayName}
+                </p>
+                <p className="figma-meta">{displayEmail ?? "Not signed in"}</p>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant={theme === "light" ? "primary" : "secondary"}
-              type="button"
-              onClick={() => setTheme("light")}
+        </StaggerItem>
+
+        <StaggerItem>
+          <div className="figma-surface-card overflow-hidden">
+            <div
+              className="flex items-center justify-between border-b border-[var(--border-default)]"
+              style={{
+                paddingBlock: "var(--settings-row-padding-y)",
+                paddingInline: "var(--settings-row-padding-x)",
+              }}
             >
-              Light
-            </Button>
-            <Button
-              size="sm"
-              variant={theme === "dark" ? "primary" : "secondary"}
-              type="button"
-              onClick={() => setTheme("dark")}
+              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+                <BellIcon className="text-[var(--text-secondary)]" />
+                Notifications
+              </span>
+              <AnimatedToggle
+                label="Notifications"
+                checked={notifications}
+                onChange={(v) => {
+                  setNotifications(v);
+                  localStorage.setItem("documind-notifications", String(v));
+                }}
+              />
+            </div>
+            <div
+              className="flex items-center justify-between"
+              style={{
+                paddingBlock: "var(--settings-row-padding-y)",
+                paddingInline: "var(--settings-row-padding-x)",
+              }}
             >
-              Dark
-            </Button>
+              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+                <MoonIcon className="text-[var(--text-secondary)]" />
+                Dark mode
+              </span>
+              <AnimatedToggle
+                label="Dark mode"
+                checked={isDark}
+                onChange={(v) => setTheme(v ? "dark" : "light")}
+              />
+            </div>
           </div>
-        </div>
-        <Divider />
-        <Button variant="destructive" fullWidth type="button" onClick={() => void signOut()}>
-          Sign out
-        </Button>
-      </Card>
-    </>
+        </StaggerItem>
+
+        <StaggerItem>
+          <div className="figma-surface-card overflow-hidden">
+            <Link
+              href="/terms"
+              className="hover-lift flex items-center justify-between border-b border-[var(--border-default)] transition-colors hover:bg-[var(--surface-sunken)]"
+              style={{
+                paddingBlock: "var(--settings-row-padding-y)",
+                paddingInline: "var(--settings-row-padding-x)",
+              }}
+            >
+              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+                <LockIcon className="text-[var(--text-secondary)]" />
+                Privacy & security
+              </span>
+              <ChevronRightIcon className="text-[var(--text-tertiary)]" />
+            </Link>
+            <a
+              href="mailto:support@documind.app"
+              className="hover-lift flex items-center justify-between transition-colors hover:bg-[var(--surface-sunken)]"
+              style={{
+                paddingBlock: "var(--settings-row-padding-y)",
+                paddingInline: "var(--settings-row-padding-x)",
+              }}
+            >
+              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+                <HelpIcon className="text-[var(--text-secondary)]" />
+                Help & support
+              </span>
+              <ChevronRightIcon className="text-[var(--text-tertiary)]" />
+            </a>
+          </div>
+        </StaggerItem>
+
+        <StaggerItem>
+          <button
+            type="button"
+            onClick={() => void signOut()}
+            className="interaction-press figma-surface-card flex w-full items-center gap-3 text-sm font-medium text-[var(--brand-primary)] transition-colors hover:bg-[var(--surface-sunken)]"
+            style={{
+              paddingBlock: "var(--settings-row-padding-y)",
+              paddingInline: "var(--settings-row-padding-x)",
+            }}
+          >
+            <LogoutIcon />
+            Sign out
+          </button>
+        </StaggerItem>
+      </StaggerList>
+
+      <p className="figma-caption mt-8 text-center">DocuMind v1.0.0</p>
+    </div>
   );
 }

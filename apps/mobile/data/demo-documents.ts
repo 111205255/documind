@@ -3,6 +3,7 @@ export type DocumentListItem = {
   title: string;
   pageCount: number;
   relativeTime: string;
+  status?: "uploading" | "processing" | "ready" | "failed";
 };
 
 export const DEMO_DOCUMENTS: DocumentListItem[] = [

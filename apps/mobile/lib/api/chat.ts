@@ -12,7 +12,7 @@ export type ApiCitation = {
 export async function askDocument(
   documentId: string,
   question: string,
-): Promise<{ answer: string; citations: ApiCitation[] }> {
+): Promise<{ answer: string; citations: ApiCitation[]; followUpQuestions: string[] }> {
   const response = await apiFetch("/api/v1/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -24,5 +24,14 @@ export async function askDocument(
     throw new Error(formatApiError(detail) || `Chat failed (${response.status})`);
   }
 
-  return response.json() as Promise<{ answer: string; citations: ApiCitation[] }>;
+  const data = (await response.json()) as {
+    answer: string;
+    citations: ApiCitation[];
+    follow_up_questions?: string[];
+  };
+  return {
+    answer: data.answer,
+    citations: data.citations,
+    followUpQuestions: data.follow_up_questions ?? [],
+  };
 }

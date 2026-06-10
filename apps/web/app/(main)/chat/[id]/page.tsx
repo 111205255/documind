@@ -1,4 +1,5 @@
-import { ActiveChatScreen } from "@/features/chat/components/active-chat-screen";
+import { notFound } from "next/navigation";
+import { ChatDashboardScreen } from "@/features/chat/components/chat-dashboard-screen";
 import { getDocumentById } from "@/services/documents/get-document-server";
 
 export default async function ActiveChatPage({
@@ -8,8 +9,13 @@ export default async function ActiveChatPage({
 }) {
   const { id } = await params;
   const doc = await getDocumentById(id);
+  if (!doc) notFound();
 
   return (
-    <ActiveChatScreen documentId={id} documentTitle={doc?.title ?? "Document"} />
+    <ChatDashboardScreen
+      documentId={id}
+      documentTitle={doc.title}
+      pageCount={doc.page_count || undefined}
+    />
   );
 }

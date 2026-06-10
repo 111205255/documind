@@ -7,25 +7,31 @@ import { PressableScale } from "./motion";
 export function ScreenHeader({
   title,
   onBack,
+  showBack = true,
 }: {
   title: string;
   onBack?: () => void;
+  showBack?: boolean;
 }) {
   const router = useRouter();
   const { colors } = useTheme();
 
   return (
     <View style={styles.row}>
-      <PressableScale
-        onPress={onBack ?? (() => router.back())}
-        hitSlop={12}
-        variant="button"
-        haptic="light"
-        accessibilityLabel="Back"
-        style={styles.backBtn}
-      >
-        <Ionicons name="chevron-back" size={26} color={colors.brandPrimary} />
-      </PressableScale>
+      {showBack ? (
+        <PressableScale
+          onPress={onBack ?? (() => router.back())}
+          hitSlop={12}
+          variant="button"
+          haptic="light"
+          accessibilityLabel="Back"
+          style={styles.backBtn}
+        >
+          <Ionicons name="chevron-back" size={26} color={colors.brandPrimary} />
+        </PressableScale>
+      ) : (
+        <View style={styles.backBtn} />
+      )}
       <Text style={[styles.title, { color: colors.textPrimary }]}>{title}</Text>
       <View style={styles.spacer} />
     </View>

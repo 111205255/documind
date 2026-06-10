@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     )
 
     google_api_key: str = ""
+    rag_api_key: str = ""
     gemini_model: str = "gemini-2.5-flash"
     gemini_embedding_model: str = "gemini-embedding-001"
 
@@ -28,6 +29,11 @@ class Settings(BaseSettings):
 
     supabase_url: str = ""
     supabase_service_role_key: str = ""
+    supabase_jwt_secret: str = ""
+
+    environment: str = "development"
+    max_upload_bytes: int = 50 * 1024 * 1024
+    max_ingest_text_chars: int = 500_000
 
     chunk_size: int = 1000
     chunk_overlap: int = 150
@@ -36,6 +42,10 @@ class Settings(BaseSettings):
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
+
+    @property
+    def require_auth(self) -> bool:
+        return self.environment.strip().lower() == "production"
 
 
 @lru_cache

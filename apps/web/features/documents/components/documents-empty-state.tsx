@@ -1,33 +1,54 @@
 "use client";
 
-import Link from "next/link";
 import { DocumentOutlineIcon, PlusIcon } from "@/components/brand/icons";
-import { ROUTES } from "@/lib/constants";
 import { FadeIn } from "@/components/motion/fade-in";
+import { FloatingIcon } from "@/components/motion/floating-icon";
+import Link from "next/link";
+import { ROUTES } from "@/lib/constants";
 
-/** Figma frame 03 — empty home */
-export function DocumentsEmptyState() {
+/** Figma frame 03 — empty home, centered in main canvas */
+export function DocumentsEmptyState({ onUpload }: { onUpload?: () => void }) {
+  const uploadBtn = (
+    <span className="figma-primary-btn mt-10">
+      <PlusIcon />
+      Upload your first document
+    </span>
+  );
+
   return (
-    <FadeIn className="flex flex-1 flex-col items-center justify-center py-8 text-center">
-      <div
-        className="flex h-[7.5rem] w-[7.5rem] items-center justify-center rounded-[2rem] bg-[var(--doc-empty-icon-bg)] text-[var(--brand-primary)] shadow-[var(--doc-empty-icon-shadow)]"
-        aria-hidden
-      >
-        <DocumentOutlineIcon className="h-12 w-12" />
-      </div>
+    <FadeIn
+      className="flex min-h-[calc(100dvh-12rem)] flex-col items-center justify-center py-16 text-center lg:min-h-[calc(100dvh-8rem)]"
+      data-testid="documents-empty-state"
+    >
+      <FloatingIcon>
+        <div
+          className="flex items-center justify-center text-[var(--brand-primary)] shadow-[var(--doc-empty-icon-shadow)]"
+          style={{
+            width: "var(--doc-empty-icon-size)",
+            height: "var(--doc-empty-icon-size)",
+            borderRadius: "var(--doc-empty-icon-radius)",
+            background: "var(--doc-empty-icon-bg)",
+          }}
+          aria-hidden
+        >
+          <DocumentOutlineIcon className="h-12 w-12" />
+        </div>
+      </FloatingIcon>
 
-      <h2 className="mt-8 text-xl font-bold text-[var(--text-primary)]">No documents yet</h2>
-      <p className="mt-3 max-w-[16.5rem] text-base leading-relaxed text-[var(--text-secondary)]">
+      <h2 className="figma-section-title mt-10">No documents yet</h2>
+      <p className="figma-meta mt-4 max-w-md text-base leading-relaxed">
         Upload a PDF, Word file or paste a link to start chatting with it.
       </p>
 
-      <Link
-        href={ROUTES.upload}
-        className="mt-8 inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[var(--brand-primary)] px-6 text-base font-semibold text-white shadow-[var(--doc-fab-shadow)] transition-all duration-[var(--duration-fast)] hover:bg-[var(--brand-primary-hover)] active:scale-[0.98]"
-      >
-        <PlusIcon />
-        Upload your first document
-      </Link>
+      {onUpload ? (
+        <button type="button" onClick={onUpload} className="interaction-press">
+          {uploadBtn}
+        </button>
+      ) : (
+        <Link href={ROUTES.upload} className="interaction-press">
+          {uploadBtn}
+        </Link>
+      )}
     </FadeIn>
   );
 }

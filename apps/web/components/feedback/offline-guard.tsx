@@ -4,6 +4,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { ROUTES } from "@/lib/constants";
 
+const OFFLINE_RETURN_KEY = "documind-offline-return";
+
 /** Redirect to /offline when the browser loses network (Blueprint frame 15). */
 export function OfflineGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -12,13 +14,16 @@ export function OfflineGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const goOffline = () => {
       if (pathname !== ROUTES.offline && pathname !== ROUTES.login) {
+        sessionStorage.setItem(OFFLINE_RETURN_KEY, pathname);
         router.replace(ROUTES.offline);
       }
     };
 
     const goOnline = () => {
       if (pathname === ROUTES.offline) {
-        router.replace(ROUTES.home);
+        const returnPath = sessionStorage.getItem(OFFLINE_RETURN_KEY) || ROUTES.home;
+        sessionStorage.removeItem(OFFLINE_RETURN_KEY);
+        router.replace(returnPath);
       }
     };
 

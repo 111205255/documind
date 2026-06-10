@@ -13,9 +13,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { GradientBackground } from "../components/GradientBackground";
 import { DocumentCard } from "../components/DocumentCard";
+import { ScreenHeader } from "../components/ScreenHeader";
 import { listChatThreads } from "../lib/supabase/chat";
 import { useTheme } from "../theme/ThemeContext";
-import { FadeIn } from "../components/motion";
+import { FadeIn, FloatingIcon } from "../components/motion";
+import { BottomTabBar } from "../components/navigation/BottomTabBar";
 
 type ThreadItem = {
   id: string;
@@ -65,9 +67,9 @@ export default function ChatsScreen() {
   return (
     <GradientBackground>
       <SafeAreaView style={styles.safe} edges={["top"]}>
+        <ScreenHeader title="Chats" showBack={false} />
         <FadeIn>
           <View style={styles.header}>
-            <Text style={[styles.pageTitle, { color: colors.textPrimary }]}>Chats</Text>
             <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
               Your recent conversations
             </Text>
@@ -98,9 +100,14 @@ export default function ChatsScreen() {
         {loading ? (
           <ActivityIndicator style={{ marginTop: 40 }} color={colors.brandPrimary} />
         ) : filtered.length === 0 ? (
-          <Text style={[styles.empty, { color: colors.textSecondary }]}>
-            No conversations yet. Upload a document and start chatting.
-          </Text>
+          <View style={styles.emptyWrap}>
+            <FloatingIcon>
+              <Ionicons name="chatbubbles-outline" size={48} color={colors.brandPrimary} />
+            </FloatingIcon>
+            <Text style={[styles.empty, { color: colors.textSecondary }]}>
+              No conversations yet. Upload a document and start chatting.
+            </Text>
+          </View>
         ) : (
           <FlatList
             data={filtered}
@@ -111,6 +118,8 @@ export default function ChatsScreen() {
             showsVerticalScrollIndicator={false}
           />
         )}
+
+        <BottomTabBar />
       </SafeAreaView>
     </GradientBackground>
   );
@@ -118,7 +127,7 @@ export default function ChatsScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, paddingHorizontal: 24 },
-  header: { marginTop: 8, marginBottom: 20 },
+  header: { marginBottom: 16 },
   pageTitle: { fontSize: 28, fontWeight: "700" },
   subtitle: { marginTop: 8, fontSize: 16 },
   searchWrap: {
@@ -132,6 +141,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   searchInput: { flex: 1, fontSize: 16, paddingVertical: 0 },
-  list: { paddingBottom: 32 },
-  empty: { textAlign: "center", marginTop: 40, fontSize: 15, paddingHorizontal: 16 },
+  list: { paddingBottom: 120 },
+  emptyWrap: { flex: 1, alignItems: "center", justifyContent: "center", paddingBottom: 80, gap: 16 },
+  empty: { textAlign: "center", fontSize: 15, paddingHorizontal: 16 },
 });

@@ -17,4 +17,17 @@ services:
       - key: CHROMA_PERSIST_DIRECTORY
         value: /app/chroma_data
       - key: CORS_ORIGINS
-        value: https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000
+        value: https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000,http://localhost:8081
+      - key: RAG_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+    # Persistent disk requires Starter plan ($7/mo). Uncomment after upgrading:
+    # disk:
+    #   name: chroma-data
+    #   mountPath: /app/chroma_data
+    #   sizeGB: 1

@@ -1,5 +1,6 @@
 import { formatApiError } from "@/lib/api-error";
 import { getApiUrl } from "@/lib/api-url";
+import { getRagHeaders } from "@/lib/rag-headers";
 import type { Citation } from "@/types/chat";
 
 type ApiCitation = {
@@ -13,6 +14,7 @@ type ApiCitation = {
 type ChatApiResponse = {
   answer: string;
   citations: ApiCitation[];
+  follow_up_questions?: string[];
 };
 
 function mapCitation(c: ApiCitation): Citation {
@@ -28,7 +30,7 @@ function mapCitation(c: ApiCitation): Citation {
 export async function askDocument(
   documentId: string,
   question: string,
-): Promise<{ answer: string; citations: Citation[] }> {
+): Promise<{ answer: string; citations: Citation[]; followUpQuestions: string[] }> {
   const apiUrl = getApiUrl();
   if (!apiUrl) {
     throw new Error("AI backend is not configured (NEXT_PUBLIC_API_URL).");
@@ -36,7 +38,7 @@ export async function askDocument(
 
   const response = await fetch(`${apiUrl}/chat`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: await getRagHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify({ document_id: documentId, question }),
   });
 
@@ -49,5 +51,6 @@ export async function askDocument(
   return {
     answer: data.answer,
     citations: data.citations.map(mapCitation),
+    followUpQuestions: data.follow_up_questions ?? [],
   };
 }

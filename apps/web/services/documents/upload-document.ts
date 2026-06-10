@@ -64,7 +64,7 @@ export async function uploadDocument(file: File): Promise<UploadResult> {
 
   const { data: updated, error: updateError } = await supabase
     .from("documents")
-    .update({ status: "ready" })
+    .update({ status: "processing" })
     .eq("id", documentId)
     .select("*")
     .single();

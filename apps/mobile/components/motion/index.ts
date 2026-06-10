@@ -7,3 +7,5 @@ export { ShimmerBox, SkeletonLines } from "./Shimmer";
 export { FloatingIcon } from "./FloatingIcon";
 export { SuccessPulse } from "./SuccessPulse";
 export { AnimatedProgress } from "./AnimatedProgress";
+export { AnimatedIonIcon, AnimatedMaterialIcon } from "./AnimatedIcon";
+export { AnimatedFabIcon } from "./AnimatedFabIcon";

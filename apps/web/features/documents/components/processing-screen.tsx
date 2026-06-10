@@ -2,29 +2,36 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ScreenHeader } from "@/components/layout/screen-header";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
+import { ProcessingArcSpinner } from "@/components/ui/processing-arc-spinner";
 import { FadeIn } from "@/components/motion/fade-in";
+import { ErrorState } from "@/components/feedback/error-state";
 import { isApiConfigured } from "@/lib/api-url";
 import { ROUTES } from "@/lib/constants";
 import {
   downloadDocumentFile,
   ingestDocumentForRag,
+  ingestUrlForRag,
 } from "@/services/api/ingest-document";
 import { getDocumentById } from "@/services/documents/get-document";
+import { useIsTabletUp } from "@/hooks/use-media-query";
 
-/** Step 4: index document in ChromaDB, then open chat (Step 5). */
+/** Figma frame 06 — processing with arc spinner + progress */
 export function ProcessingScreen({ documentId }: { documentId: string }) {
   const router = useRouter();
+  const isTabletUp = useIsTabletUp();
   const started = useRef(false);
   const [title, setTitle] = useState<string>();
+  const [pageCount, setPageCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(12);
 
   useEffect(() => {
     if (started.current) return;
     started.current = true;
+
+    const tick = setInterval(() => {
+      setProgress((p) => Math.min(p + 3, 92));
+    }, 450);
 
     const run = async () => {
       try {
@@ -34,69 +41,77 @@ export function ProcessingScreen({ documentId }: { documentId: string }) {
           return;
         }
         setTitle(doc.title);
+        setPageCount(doc.page_count ?? 0);
 
         if (!isApiConfigured()) {
           router.replace(ROUTES.chatThread(documentId));
           return;
         }
 
-        if (doc.mime_type !== "application/pdf") {
-          router.replace(ROUTES.chatThread(documentId));
-          return;
+        if (doc.mime_type === "application/x-documind-url") {
+          await ingestUrlForRag(documentId, doc.file_name, doc.title);
+        } else {
+          const file = await downloadDocumentFile(
+            doc.storage_path,
+            doc.file_name,
+            doc.mime_type,
+          );
+          await ingestDocumentForRag(documentId, file);
         }
-
-        const file = await downloadDocumentFile(
-          doc.storage_path,
-          doc.file_name,
-          doc.mime_type,
-        );
-        await ingestDocumentForRag(documentId, file);
+        setProgress(100);
         router.replace(ROUTES.chatThread(documentId));
         router.refresh();
       } catch (e) {
         setError(e instanceof Error ? e.message : "Indexing failed.");
+      } finally {
+        clearInterval(tick);
       }
     };
 
     void run();
+    return () => clearInterval(tick);
   }, [documentId, router]);
 
   if (error) {
     return (
-      <>
-        <ScreenHeader title="Indexing failed" subtitle={title ?? "Your document"} />
-        <FadeIn className="mt-8 text-center">
-          <p className="text-sm text-[var(--error)]">{error}</p>
-          <Button className="mt-6" onClick={() => router.push(ROUTES.chatThread(documentId))}>
-            Open chat anyway
-          </Button>
-          <Button
-            className="mt-3"
-            variant="secondary"
-            onClick={() => router.push(ROUTES.home)}
-          >
-            Back to library
-          </Button>
-        </FadeIn>
-      </>
+      <ErrorState
+        message={error}
+        onRetry={() => router.push(ROUTES.chatThread(documentId))}
+      />
     );
   }
 
+  const total = pageCount > 0 ? pageCount : 64;
+  const indexedPage = Math.max(1, Math.round((progress / 100) * total));
+  const statusLine =
+    pageCount > 0
+      ? `Indexing page ${Math.min(indexedPage, total)} of ${total}…`
+      : `Indexing ${title ?? "your document"}…`;
+
   return (
-    <>
-      <ScreenHeader title="Indexing" subtitle={title ?? "Your document"} />
-      <FadeIn className="mt-8 flex flex-col items-center text-center">
-        <Spinner size="lg" />
-        <p className="mt-4 font-medium text-[var(--text-primary)]">AI is reading your document…</p>
-        <p className="mt-1 text-sm text-[var(--text-secondary)]">
-          Usually takes 10–30 seconds. You&apos;ll open chat when ready.
-        </p>
-        <div className="mt-8 w-full space-y-3">
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-4 w-4/6" />
-        </div>
-      </FadeIn>
-    </>
+    <FadeIn
+      className={
+        isTabletUp
+          ? "flex h-full flex-1 flex-col items-center justify-center text-center"
+          : "mt-8 flex flex-col items-center text-center"
+      }
+      data-testid="processing-screen"
+    >
+      <ProcessingArcSpinner />
+      <h2 className="figma-section-title mt-8">Processing your document</h2>
+      <p className="figma-meta mt-3 max-w-md text-base leading-relaxed">
+        We&apos;re reading and indexing every page so you can ask questions with exact citations.
+      </p>
+      <div className="mt-10 h-2 w-full max-w-md overflow-hidden rounded-full bg-[var(--surface-sunken)]">
+        <div
+          className="h-full rounded-full bg-[var(--brand-primary)] transition-all duration-500 ease-[var(--ease-out)]"
+          style={{ width: `${progress}%` }}
+          data-testid="processing-progress"
+        />
+      </div>
+      <p className="figma-caption mt-4" data-testid="processing-status">
+        {statusLine}
+      </p>
+    </FadeIn>
   );
 }

@@ -8,11 +8,18 @@ import {
   SkeletonLines,
 } from "../motion";
 
+export type ChatCitation = {
+  excerpt: string;
+  page: number;
+  index: number;
+};
+
 export type ChatMessage = {
   id: string;
   role: "user" | "assistant" | "thinking";
   content: string;
   pageTag?: string;
+  citations?: ChatCitation[];
   thinkingVariant?: "dots" | "scanning";
   scanRange?: string;
 };

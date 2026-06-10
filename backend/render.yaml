@@ -1,10 +1,11 @@
-# Deploy DocuMind API on Render (free tier)
+# Duplicate of root render.yaml — use repo-root render.yaml for Blueprint deploy.
+# This file documents the same service when browsing backend/ only.
 services:
   - type: web
     name: documind-api
     runtime: docker
+    rootDir: backend
     dockerfilePath: ./Dockerfile
-    dockerContext: .
     plan: free
     healthCheckPath: /api/v1/health
     envVars:
@@ -17,4 +18,12 @@ services:
       - key: CHROMA_PERSIST_DIRECTORY
         value: /app/chroma_data
       - key: CORS_ORIGINS
-        value: https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000
+        value: https://documind-beige.vercel.app,https://documind-app-two.vercel.app,http://localhost:3000,http://localhost:8081
+      - key: RAG_API_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false

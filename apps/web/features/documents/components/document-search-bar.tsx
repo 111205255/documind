@@ -13,7 +13,7 @@ export function DocumentSearchBar({
   className?: string;
 }) {
   return (
-    <div className={cn("relative mb-5", className)}>
+    <div className={cn("relative", className)}>
       <SearchIcon
         className="pointer-events-none absolute left-4 top-1/2 h-[1.125rem] w-[1.125rem] -translate-y-1/2 text-[var(--text-tertiary)]"
       />
@@ -24,7 +24,8 @@ export function DocumentSearchBar({
         placeholder="Search documents"
         aria-label="Search documents"
         className={cn(
-          "h-12 w-full rounded-full border border-[var(--doc-search-border)] bg-[var(--doc-search-bg)]",
+          "w-full rounded-full border border-[var(--doc-search-border)] bg-[var(--doc-search-bg)]",
+          "h-[var(--doc-search-height)]",
           "pl-11 pr-4 text-base text-[var(--text-primary)] placeholder:text-[var(--text-tertiary)]",
           "transition-shadow duration-[var(--duration-fast)]",
           "focus:border-[var(--brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/15",

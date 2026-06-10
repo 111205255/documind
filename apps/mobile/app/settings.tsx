@@ -3,6 +3,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { GradientBackground } from "../components/GradientBackground";
+import { ScreenHeader } from "../components/ScreenHeader";
 import { SettingsToggle } from "../components/SettingsToggle";
 import { navigate } from "../lib/nav";
 import { signOut } from "../lib/supabase/auth";
@@ -11,7 +12,8 @@ import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../theme/ThemeContext";
 import { settingsCardShadow } from "../theme/shadows";
 import { useMemo, useState } from "react";
-import { FadeIn, PressableScale, StaggerIn } from "../components/motion";
+import { AnimatedMaterialIcon, FadeIn, PressableScale, StaggerIn } from "../components/motion";
+import { BottomTabBar } from "../components/navigation/BottomTabBar";
 
 function initialsFromUser(user: { email?: string | null; user_metadata?: Record<string, unknown> } | null): string {
   const name = user?.user_metadata?.full_name;
@@ -56,9 +58,7 @@ export default function SettingsScreen() {
   return (
     <GradientBackground>
       <SafeAreaView style={styles.safe} edges={["top"]}>
-        <FadeIn>
-          <Text style={[styles.pageTitle, { color: colors.textPrimary }]}>Settings</Text>
-        </FadeIn>
+        <ScreenHeader title="Settings" showBack={false} />
 
         <ScrollView
           contentContainerStyle={styles.scroll}
@@ -82,10 +82,13 @@ export default function SettingsScreen() {
           <StaggerIn index={1}>
           <View style={cardStyle(colors.settingsCardBg)}>
             <View style={styles.toggleRow}>
-              <MaterialCommunityIcons
+              <AnimatedMaterialIcon
                 name="bell-outline"
+                activeName="bell"
+                active={notifications}
                 size={22}
                 color={colors.textSecondary}
+                activeColor={colors.brandPrimary}
               />
               <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>
                 Notifications
@@ -94,10 +97,13 @@ export default function SettingsScreen() {
             </View>
             <View style={[styles.divider, { backgroundColor: colors.settingsDivider }]} />
             <View style={styles.toggleRow}>
-              <MaterialCommunityIcons
+              <AnimatedMaterialIcon
                 name="weather-night"
+                activeName="weather-night"
+                active={isDark}
                 size={22}
                 color={colors.textSecondary}
+                activeColor={colors.brandPrimary}
               />
               <Text style={[styles.rowLabel, { color: colors.textPrimary }]}>Dark mode</Text>
               <SettingsToggle
@@ -113,7 +119,7 @@ export default function SettingsScreen() {
             {navRows.map((row, i) => (
               <View key={row.label}>
                 <PressableScale variant="card" haptic="light" style={styles.navRow}>
-                  <MaterialCommunityIcons
+                  <AnimatedMaterialIcon
                     name={row.icon}
                     size={22}
                     color={colors.textSecondary}
@@ -179,6 +185,8 @@ export default function SettingsScreen() {
 
           <Text style={[styles.version, { color: colors.textTertiary }]}>DocuMind v1.0.0</Text>
         </ScrollView>
+
+        <BottomTabBar />
       </SafeAreaView>
     </GradientBackground>
   );
@@ -187,7 +195,7 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, paddingHorizontal: 24 },
   pageTitle: { fontSize: 28, fontWeight: "700", marginTop: 8, marginBottom: 20 },
-  scroll: { paddingBottom: 32, gap: 16 },
+  scroll: { paddingBottom: 120, gap: 16 },
   card: { borderRadius: 20, overflow: "hidden" },
   profileRow: {
     flexDirection: "row",

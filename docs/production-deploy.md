@@ -1,41 +1,42 @@
-# Production deploy — finish the last steps
+# Production deploy — DocuMind API
 
-Code is complete. These three items need your accounts (cannot be automated without login tokens).
-
-## Option A — Fly.io (requires credit card on Fly account)
+## Render (recommended — free tier)
 
 ```powershell
-# 1. One-time login (opens browser)
-& "$env:USERPROFILE\.fly\bin\flyctl.exe" auth login
+# 1. Push repo
+.\backend\deploy-render.ps1
 
-# 2. Add billing (one time): https://fly.io/dashboard/personal/billing
+# 2. In Render dashboard → documind-api → Environment, set:
+#    GOOGLE_API_KEY          (from https://aistudio.google.com/apikey)
+#    SUPABASE_URL            (https://YOUR_PROJECT.supabase.co)
+#    SUPABASE_SERVICE_ROLE_KEY
+#    SUPABASE_JWT_SECRET     (Supabase → Settings → API → JWT Secret)
+#    RAG_API_KEY             (optional shared secret, e.g. openssl rand -hex 32)
 
-# 3. Deploy + wire Vercel automatically
+# 3. Wire Vercel to the API URL:
+.\scripts\finish-production.ps1 -ApiUrl "https://documind-api-drsq.onrender.com"
+```
+
+If you set `RAG_API_KEY` on Render, also add it on Vercel as `RAG_API_KEY` (web proxy uses it).
+
+## Chroma persistence on Render
+
+Free Render instances use **ephemeral disk** — indexed documents are lost on redeploy/restart. Users must re-upload after a deploy.
+
+To persist vectors, upgrade to Render **Starter** and uncomment the `disk:` block in `render.yaml`.
+
+## Fly.io (requires credit card)
+
+```powershell
+flyctl auth login
 .\backend\deploy-fly.ps1
 ```
 
-## Option B — Render (free tier, no credit card — recommended if Fly blocks you)
-
-```powershell
-.\backend\deploy-render.ps1
-```
-
-1. Connect GitHub repo on Render (push documind to GitHub first if needed).
-2. Blueprint path: `backend/render.yaml`
-3. Add `OPENAI_API_KEY` in Render dashboard.
-4. Copy service URL, then:
-
-```powershell
-.\scripts\finish-production.ps1 -ApiUrl "https://YOUR-SERVICE.onrender.com"
-```
-
-## Option C — Keep using your PC (temporary)
+## Local dev (temporary cloud URL)
 
 ```powershell
 .\scripts\keep-api-alive.ps1
 ```
-
-Leave the window open. Answer `y` to refresh Vercel env when prompted.
 
 ## Android APK
 
@@ -45,9 +46,9 @@ npx eas-cli login
 npx eas-cli build --platform android --profile preview
 ```
 
-Download APK from the Expo dashboard when the build finishes.
+## Security checklist
 
-## Security
-
-- Rotate your OpenAI API key at https://platform.openai.com/api-keys (old key was exposed in a terminal).
-- `backend/.env` is gitignored — never commit it.
+- Rotate `GOOGLE_API_KEY` if it was ever exposed in a terminal
+- Set `SUPABASE_JWT_SECRET` + service role on Render so only signed-in users can chat/ingest their own docs
+- Set `RAG_API_KEY` to block anonymous API access
+- Never commit `backend/.env`

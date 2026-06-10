@@ -3,6 +3,7 @@
 import { ThemeProvider } from "next-themes";
 import type { ReactNode } from "react";
 import { OfflineGuard } from "@/components/feedback/offline-guard";
+import { PwaRegister } from "@/components/pwa-register";
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export function Providers({ children }: { children: ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
+      <PwaRegister />
       <OfflineGuard>{children}</OfflineGuard>
     </ThemeProvider>
   );

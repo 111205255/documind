@@ -2,12 +2,20 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { ChatBubbleIcon, SendIcon, ShareIcon } from "@/components/brand/icons";
 import { CitationPill } from "@/components/ui/citation-pill";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { IconButton } from "@/components/ui/icon-button";
+import { FloatingIcon } from "@/components/motion/floating-icon";
 import { ThinkingDots } from "@/components/motion/thinking-dots";
+import { ThinkingSparkle } from "@/components/motion/thinking-sparkle";
 import { SlideUp } from "@/components/motion/slide-up";
 import { ShareSheet } from "@/features/settings/components/share-sheet";
+import { ShareDocumentModal } from "@/features/settings/components/share-document-modal";
+import { useThinkingPhase } from "@/features/chat/hooks/use-thinking-phase";
+import type { ThinkingPhase } from "@/features/chat/hooks/use-thinking-phase";
+import { AiThinkingBubble } from "./ai-thinking-bubble";
+import { CitationModal } from "./citation-modal";
 import { ROUTES } from "@/lib/constants";
 import { askDocument } from "@/services/api/chat";
 import {
@@ -24,14 +32,26 @@ const STARTER_QUESTIONS = [
   "What are the main conclusions?",
 ];
 
-/** Hero frame 08 + citation sheet (09) + thinking (10) — API + persistence */
+const PANEL_STARTERS = ["Carry forward?", "Maternity leave?", "Notice period?"];
+
 export function ActiveChatScreen({
   documentId,
   documentTitle = "Document",
+  layout = "mobile",
+  onCitationSelect,
+  onThinkingChange,
 }: {
   documentId: string;
   documentTitle?: string;
+  layout?: "mobile" | "panel";
+  onCitationSelect?: (citation: Citation) => void;
+  onThinkingChange?: (state: {
+    thinking: boolean;
+    phase: ThinkingPhase;
+    scanRange: string;
+  }) => void;
 }) {
+  const isPanel = layout === "panel";
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -39,8 +59,15 @@ export function ActiveChatScreen({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [citationModalOpen, setCitationModalOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
   const [activeCitation, setActiveCitation] = useState<Citation | null>(null);
+  const [followUps, setFollowUps] = useState<string[]>([]);
+  const { phase: thinkingPhase, scanRange } = useThinkingPhase(thinking);
+
+  useEffect(() => {
+    onThinkingChange?.({ thinking, phase: thinkingPhase, scanRange });
+  }, [thinking, thinkingPhase, scanRange, onThinkingChange]);
 
   useEffect(() => {
     let cancelled = false;
@@ -64,7 +91,9 @@ export function ActiveChatScreen({
 
   const openCitation = (c: Citation) => {
     setActiveCitation(c);
-    setSheetOpen(true);
+    onCitationSelect?.(c);
+    if (isPanel) setCitationModalOpen(true);
+    else setSheetOpen(true);
   };
 
   const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
@@ -75,6 +104,7 @@ export function ActiveChatScreen({
 
     setError(null);
     setInput("");
+    setFollowUps([]);
     setThinking(true);
 
     const userMsg: ChatMessage = {
@@ -87,8 +117,8 @@ export function ActiveChatScreen({
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      await saveMessage(threadId, "user", trimmed);
-      const { answer, citations } = await askDocument(documentId, trimmed);
+      const { answer, citations, followUpQuestions } = await askDocument(documentId, trimmed);
+      setFollowUps(followUpQuestions);
       const assistantMsg: ChatMessage = {
         id: crypto.randomUUID(),
         threadId,
@@ -99,10 +129,12 @@ export function ActiveChatScreen({
         status: "complete",
       };
       setMessages((prev) => [...prev, assistantMsg]);
+      await saveMessage(threadId, "user", trimmed);
       await saveMessage(threadId, "assistant", answer, citations);
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Could not get an answer.";
       setError(msg);
+      setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
       setMessages((prev) => [
         ...prev,
         {
@@ -119,16 +151,39 @@ export function ActiveChatScreen({
     }
   };
 
+  const starters = isPanel ? PANEL_STARTERS : STARTER_QUESTIONS;
+  const heightClass = isPanel
+    ? "flex h-full min-h-0 flex-col p-[var(--chat-panel-padding)]"
+    : "flex h-[calc(100dvh-var(--bottom-nav-height)-2rem)] flex-col px-4 py-4";
+
   return (
-    <div className="flex h-[calc(100dvh-var(--header-height)-var(--bottom-nav-height)-2rem)] flex-col">
-      <header className="flex items-center gap-2 border-b border-[var(--border-default)] pb-3">
-        <h1 className="flex-1 truncate text-lg font-semibold">{documentTitle}</h1>
+    <div className={heightClass}>
+      <header
+        className={cn(
+          "flex items-center gap-2 pb-3",
+          isPanel ? "border-b border-[var(--panel-border)]" : "border-b border-[var(--border-default)]",
+        )}
+      >
+        <div className="flex-1">
+          <h1 className="truncate text-base font-semibold leading-tight text-[var(--text-primary)]">
+            Chat
+          </h1>
+          {isPanel ? (
+            <p className="figma-caption mt-0.5">Ask about this document</p>
+          ) : (
+            <p className="truncate text-lg font-semibold text-[var(--text-primary)]">
+              {documentTitle}
+            </p>
+          )}
+        </div>
         <IconButton label="Share" onClick={() => setShareOpen(true)}>
-          ↗
+          <ShareIcon className="h-4 w-4" />
         </IconButton>
-        <Link href={ROUTES.chatHistory}>
-          <IconButton label="Chat history">⋯</IconButton>
-        </Link>
+        {!isPanel ? (
+          <Link href={ROUTES.chatHistory}>
+            <IconButton label="Chat history">⋯</IconButton>
+          </Link>
+        ) : null}
       </header>
 
       <div className="flex-1 space-y-4 overflow-y-auto py-4" role="log" aria-live="polite">
@@ -139,35 +194,39 @@ export function ActiveChatScreen({
         ) : null}
 
         {!loading && messages.length === 0 ? (
-          <div className="space-y-3 pt-4">
-            <p className="text-center text-sm text-[var(--text-secondary)]">
-              Ask anything about this document.
+          <div className="flex flex-col items-center pt-8 text-center" data-testid="chat-empty-state">
+            <FloatingIcon>
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)]">
+                <ChatBubbleIcon className="h-7 w-7" />
+              </div>
+            </FloatingIcon>
+            <p className="font-semibold text-[var(--text-primary)]">Start the conversation</p>
+            <p className="mt-2 max-w-xs text-sm text-[var(--text-secondary)]">
+              Ask anything about this document — you&apos;ll get answers with exact page citations.
             </p>
-            <div className="flex flex-col gap-2">
-              {STARTER_QUESTIONS.map((q) => (
-                <button
-                  key={q}
-                  type="button"
-                  onClick={() => void sendQuestion(q)}
-                  className="rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-3 text-left text-sm text-[var(--text-primary)] transition hover:border-[var(--border-focus)]"
-                >
-                  {q}
-                </button>
-              ))}
-            </div>
+            {!isPanel ? (
+              <div className="mt-6 flex w-full flex-col gap-2">
+                {starters.map((q) => (
+                  <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} />
+                ))}
+              </div>
+            ) : null}
           </div>
         ) : null}
 
         {messages.map((msg) => (
           <SlideUp key={msg.id}>
-            <MessageBubble message={msg} onCitationClick={openCitation} />
+            <MessageBubble message={msg} onCitationClick={openCitation} panel={isPanel} />
           </SlideUp>
         ))}
 
-        {thinking ? (
-          <div className="flex items-center gap-2 rounded-[var(--radius-xl)] bg-[var(--chat-assistant-bg)] px-4 py-3">
-            <ThinkingDots />
-            <span className="text-sm text-[var(--text-secondary)]">Thinking…</span>
+        {thinking ? <AiThinkingBubble phase={thinkingPhase} scanRange={scanRange} /> : null}
+
+        {!thinking && followUps.length > 0 ? (
+          <div className="flex flex-wrap gap-2 pt-2">
+            {followUps.map((q) => (
+              <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} small />
+            ))}
           </div>
         ) : null}
       </div>
@@ -178,6 +237,14 @@ export function ActiveChatScreen({
         </p>
       ) : null}
 
+      {isPanel && messages.length === 0 && !thinking ? (
+        <div className="mb-3 flex flex-wrap gap-2">
+          {starters.map((q) => (
+            <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} small />
+          ))}
+        </div>
+      ) : null}
+
       <form
         className="mt-auto flex gap-2 border-t border-[var(--border-default)] pt-3"
         onSubmit={(e) => {
@@ -186,8 +253,9 @@ export function ActiveChatScreen({
         }}
       >
         <input
-          className="h-11 flex-1 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 text-sm"
-          placeholder="Ask a question…"
+          className="flex-1 rounded-full border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 text-sm transition-shadow duration-[var(--duration-fast)] focus:border-[var(--brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/15"
+          style={{ height: "var(--chat-input-height)" }}
+          placeholder={messages.length ? "Ask a follow-up…" : "Ask anything…"}
           aria-label="Message"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -196,45 +264,103 @@ export function ActiveChatScreen({
         <button
           type="submit"
           disabled={thinking || loading || !input.trim()}
-          className="h-11 rounded-[var(--radius-lg)] bg-[var(--brand-primary)] px-4 text-sm font-medium text-white transition active:scale-95 disabled:opacity-50"
+          className={cn(
+            "interaction-press flex shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-white shadow-[var(--doc-fab-shadow)] transition disabled:opacity-50",
+            thinking && "overflow-visible",
+          )}
+          aria-label={thinking ? "AI is thinking" : "Send"}
+          data-testid="chat-send-button"
+          style={{
+            width: "var(--chat-send-size)",
+            height: "var(--chat-send-size)",
+          }}
         >
-          Send
+          {thinking ? <ThinkingSparkle active /> : <SendIcon className="h-[18px] w-[18px]" />}
         </button>
       </form>
 
-      <BottomSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        title={activeCitation ? `Citation [${activeCitation.index}]` : "Citation"}
-      >
-        {activeCitation ? (
-          <>
-            <p className="text-xs text-[var(--text-tertiary)]">Page {activeCitation.page}</p>
-            <p className="mt-2 text-sm text-[var(--text-primary)]">{activeCitation.excerpt}</p>
-          </>
-        ) : null}
-      </BottomSheet>
+      {!isPanel ? (
+        <BottomSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          title={activeCitation ? `Citation [${activeCitation.index}]` : "Citation"}
+        >
+          {activeCitation ? (
+            <>
+              <p className="text-xs text-[var(--text-tertiary)]">Page {activeCitation.page}</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)]">{activeCitation.excerpt}</p>
+            </>
+          ) : null}
+        </BottomSheet>
+      ) : (
+        <CitationModal
+          open={citationModalOpen}
+          onClose={() => setCitationModalOpen(false)}
+          citation={activeCitation}
+          documentTitle={documentTitle}
+        />
+      )}
 
-      <ShareSheet
-        open={shareOpen}
-        onClose={() => setShareOpen(false)}
-        shareText={lastAssistant?.content}
-        shareUrl={
-          typeof window !== "undefined"
-            ? `${window.location.origin}${ROUTES.chatThread(documentId)}`
-            : undefined
-        }
-      />
+      {isPanel ? (
+        <ShareDocumentModal
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          shareText={lastAssistant?.content}
+          shareUrl={
+            typeof window !== "undefined"
+              ? `${window.location.origin}${ROUTES.chatThread(documentId)}`
+              : undefined
+          }
+          documentTitle={documentTitle}
+        />
+      ) : (
+        <ShareSheet
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          shareText={lastAssistant?.content}
+          shareUrl={
+            typeof window !== "undefined"
+              ? `${window.location.origin}${ROUTES.chatThread(documentId)}`
+              : undefined
+          }
+        />
+      )}
     </div>
+  );
+}
+
+function StarterChip({
+  label,
+  onClick,
+  small,
+}: {
+  label: string;
+  onClick: () => void;
+  small?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "interaction-press rounded-full border border-[var(--border-default)] bg-[var(--surface-sunken)] text-[var(--text-primary)] transition-all duration-[var(--duration-fast)] hover:border-[var(--brand-primary)] hover:bg-[var(--citation-bg)]",
+        small ? "px-3 py-1.5 text-xs font-medium" : "w-full px-4 py-3 text-left text-sm",
+      )}
+      data-testid="starter-chip"
+    >
+      {label}
+    </button>
   );
 }
 
 function MessageBubble({
   message,
   onCitationClick,
+  panel,
 }: {
   message: ChatMessage;
   onCitationClick: (c: Citation) => void;
+  panel?: boolean;
 }) {
   const isUser = message.role === "user";
 
@@ -242,10 +368,12 @@ function MessageBubble({
     <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "max-w-[85%] rounded-[var(--radius-xl)] px-4 py-3 text-sm leading-relaxed",
+          "max-w-[85%] text-sm leading-relaxed",
           isUser
-            ? "bg-[var(--chat-user-bg)] text-[var(--chat-user-text)]"
-            : "border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] text-[var(--chat-assistant-text)]",
+            ? "figma-user-bubble max-w-[85%]"
+            : panel
+              ? "py-1 text-[var(--chat-assistant-text)]"
+              : "rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] px-4 py-3 text-[var(--chat-assistant-text)]",
         )}
       >
         <p>{message.content}</p>

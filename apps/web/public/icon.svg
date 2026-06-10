@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="DocuMind">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#g)"/>
+  <path fill="#fff" d="M148 132h216c12 0 22 10 22 22v204c0 12-10 22-22 22H148c-12 0-22-10-22-22V154c0-12 10-22 22-22zm36 52v152h144V184H184zm72 36l-48 64h32l-8 40 56-72h-32z"/>
+</svg>

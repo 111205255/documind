@@ -45,8 +45,12 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [citationOpen, setCitationOpen] = useState(false);
-  const [citationExcerpt, setCitationExcerpt] = useState("");
   const [shareOpen, setShareOpen] = useState(false);
+  const [followUps, setFollowUps] = useState<string[]>([]);
+  const [activeCitation, setActiveCitation] = useState<{
+    excerpt: string;
+    page: number;
+  } | null>(null);
   const scrollRef = useRef<ScrollView>(null);
 
   useEffect(() => {
@@ -93,13 +97,19 @@ export default function ChatScreen() {
     }
 
     try {
-      const { answer, citations } = await askDocument(id, trimmed);
+      const { answer, citations, followUpQuestions } = await askDocument(id, trimmed);
+      setFollowUps(followUpQuestions);
       const pageTag = citations[0] ? `p.${citations[0].page}` : undefined;
       const assistantMsg: ChatMessage = {
         id: createUuid(),
         role: "assistant",
         content: answer,
         pageTag,
+        citations: citations.map((c, index) => ({
+          excerpt: c.excerpt,
+          page: c.page,
+          index: c.index ?? index,
+        })),
       };
       setMessages((prev) => [...prev, assistantMsg]);
       await saveChatMessage(threadId, "assistant", answer, citations);
@@ -158,11 +168,22 @@ export default function ChatScreen() {
                   message={m}
                   index={i}
                   onCitationPress={() => {
-                    setCitationExcerpt(m.content.slice(0, 300));
+                    const c = m.citations?.[0];
+                    setActiveCitation({
+                      excerpt: c?.excerpt ?? m.content.slice(0, 300),
+                      page: c?.page ?? 1,
+                    });
                     setCitationOpen(true);
                   }}
                 />
               ))}
+              {!thinking && followUps.length > 0 ? (
+                <View style={styles.chips}>
+                  {followUps.map((q, i) => (
+                    <ChatChip key={q} label={q} index={i} onPress={() => void sendQuestion(q)} />
+                  ))}
+                </View>
+              ) : null}
               {thinking ? (
                 <ChatMessageBubble
                   message={{
@@ -190,7 +211,11 @@ export default function ChatScreen() {
         <CitationSheet
           visible={citationOpen}
           onClose={() => setCitationOpen(false)}
-          excerpt={citationExcerpt}
+          documentTitle={title}
+          pageLabel={
+            activeCitation ? `Page ${activeCitation.page}` : "Source excerpt"
+          }
+          excerpt={activeCitation?.excerpt ?? ""}
         />
         <ShareSheet
           visible={shareOpen}

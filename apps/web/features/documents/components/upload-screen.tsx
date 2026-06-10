@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { FadeIn } from "@/components/motion/fade-in";
 import { ROUTES } from "@/lib/constants";
 import { uploadDocument } from "@/services/documents/upload-document";
+import { uploadUrlDocument } from "@/services/documents/upload-url-document";
 
 /** Frame 05 — upload to Supabase Storage (Blueprint Step 3) */
 export function UploadScreen() {
@@ -15,6 +16,20 @@ export function UploadScreen() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [url, setUrl] = useState("");
+
+  const onUrl = async () => {
+    setError(null);
+    setUploading(true);
+    try {
+      const { document } = await uploadUrlDocument(url);
+      router.push(ROUTES.processing(document.id));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not save link.");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const onFile = async (file: File | undefined) => {
     if (!file) return;
@@ -53,6 +68,26 @@ export function UploadScreen() {
             onChange={(e) => void onFile(e.target.files?.[0])}
           />
         </Card>
+        <Card className="mt-6 space-y-3 p-4">
+          <p className="text-sm font-medium text-[var(--text-primary)]">Or paste a web link</p>
+          <input
+            className="h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 text-sm"
+            placeholder="https://example.com/article"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            disabled={uploading}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            fullWidth
+            disabled={uploading || !url.trim()}
+            onClick={() => void onUrl()}
+          >
+            Index link
+          </Button>
+        </Card>
+
         {error ? (
           <p className="mt-4 text-center text-sm text-[var(--error)]" role="alert">
             {error}

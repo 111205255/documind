@@ -21,12 +21,16 @@ def get_vector_store(settings: Settings) -> Chroma:
     )
 
 
-def delete_document_chunks(store: Chroma, document_id: str) -> None:
-    """Remove all chunks for a document before re-indexing."""
+def delete_document_chunks(store: Chroma, document_id: str) -> int:
+    """Remove all chunks for a document before re-indexing. Returns deleted count."""
     try:
-        store._collection.delete(where={"document_id": {"$eq": document_id}})
-    except Exception:
-        pass
+        existing = store._collection.get(where={"document_id": {"$eq": document_id}})
+        count = len(existing.get("ids") or [])
+        if count:
+            store._collection.delete(where={"document_id": {"$eq": document_id}})
+        return count
+    except Exception as exc:
+        raise RuntimeError(f"Failed to delete chunks for {document_id}: {exc}") from exc
 
 
 def add_chunks(

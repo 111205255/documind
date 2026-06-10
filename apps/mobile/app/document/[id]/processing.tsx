@@ -9,7 +9,11 @@ import { useTheme } from "../../../theme/ThemeContext";
 import { FadeIn, FloatingIcon, SuccessPulse } from "../../../components/motion";
 import { hapticSuccess } from "../../../lib/haptics";
 import { isApiConfigured } from "../../../lib/env";
-import { downloadDocumentFile, ingestDocumentForRag } from "../../../lib/api/ingest";
+import {
+  downloadDocumentFile,
+  ingestDocumentForRag,
+  ingestUrlForRag,
+} from "../../../lib/api/ingest";
 import { supabase } from "../../../lib/supabase/client";
 
 export default function ProcessingScreen() {
@@ -40,19 +44,23 @@ export default function ProcessingScreen() {
 
         setDocTitle(doc.title);
 
-        if (!isApiConfigured() || doc.mime_type !== "application/pdf") {
+        if (!isApiConfigured()) {
           setComplete(true);
           void hapticSuccess();
           setTimeout(() => router.replace({ pathname: "/chat/[id]", params: { id } }), 800);
           return;
         }
 
-        const file = await downloadDocumentFile(
-          doc.storage_path,
-          doc.file_name,
-          doc.mime_type,
-        );
-        await ingestDocumentForRag(id, file);
+        if (doc.mime_type === "application/x-documind-url") {
+          await ingestUrlForRag(id, doc.file_name, doc.title);
+        } else {
+          const file = await downloadDocumentFile(
+            doc.storage_path,
+            doc.file_name,
+            doc.mime_type,
+          );
+          await ingestDocumentForRag(id, file);
+        }
         setComplete(true);
         void hapticSuccess();
         setTimeout(() => router.replace({ pathname: "/chat/[id]", params: { id } }), 800);

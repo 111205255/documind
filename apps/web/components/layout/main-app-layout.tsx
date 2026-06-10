@@ -1,22 +1,19 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { AppShell } from "./app-shell";
+import { DashboardShell } from "./dashboard-shell";
+import { ROUTES } from "@/lib/constants";
 import type { ReactNode } from "react";
 
-const FULL_BLEED_ROUTES = ["/home"];
-const HIDE_NAV_PREFIXES = ["/home", "/documents"];
-
+/** Only active chat uses full-bleed 3-panel layout (frames 07–10). */
 export function MainAppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const fullBleed = FULL_BLEED_ROUTES.includes(pathname);
-  const hideNav = HIDE_NAV_PREFIXES.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  const fullWidth = pathname.startsWith("/chat/") && pathname !== ROUTES.chatHistory;
+  const wideContent = pathname === ROUTES.home;
 
   return (
-    <AppShell hideNav={hideNav} fullBleed={fullBleed}>
+    <DashboardShell fullWidth={fullWidth} wideContent={wideContent}>
       {children}
-    </AppShell>
+    </DashboardShell>
   );
 }
