@@ -193,7 +193,14 @@ export function ActiveChatScreen({
           </div>
         ) : null}
 
-        {!loading && messages.length === 0 ? (
+        {!loading && messages.length === 0 && isPanel ? (
+          <p className="text-sm leading-relaxed text-[var(--text-primary)]" data-testid="chat-welcome-message">
+            Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to the exact
+            page.
+          </p>
+        ) : null}
+
+        {!loading && messages.length === 0 && !isPanel ? (
           <div className="flex flex-col items-center pt-8 text-center" data-testid="chat-empty-state">
             <FloatingIcon>
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)]">
@@ -204,13 +211,11 @@ export function ActiveChatScreen({
             <p className="mt-2 max-w-xs text-sm text-[var(--text-secondary)]">
               Ask anything about this document — you&apos;ll get answers with exact page citations.
             </p>
-            {!isPanel ? (
-              <div className="mt-6 flex w-full flex-col gap-2">
-                {starters.map((q) => (
-                  <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} />
-                ))}
-              </div>
-            ) : null}
+            <div className="mt-6 flex w-full flex-col gap-2">
+              {starters.map((q) => (
+                <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} />
+              ))}
+            </div>
           </div>
         ) : null}
 
@@ -237,7 +242,7 @@ export function ActiveChatScreen({
         </p>
       ) : null}
 
-      {isPanel && messages.length === 0 && !thinking ? (
+      {isPanel && !thinking ? (
         <div className="mb-3 flex flex-wrap gap-2">
           {starters.map((q) => (
             <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} small />
@@ -246,7 +251,7 @@ export function ActiveChatScreen({
       ) : null}
 
       <form
-        className="mt-auto flex gap-2 border-t border-[var(--border-default)] pt-3"
+        className="mt-auto flex items-center gap-2 border-t border-[var(--border-default)] pt-4"
         onSubmit={(e) => {
           e.preventDefault();
           void sendQuestion(input);
@@ -255,7 +260,7 @@ export function ActiveChatScreen({
         <input
           className="flex-1 rounded-full border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 text-sm transition-shadow duration-[var(--duration-fast)] focus:border-[var(--brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/15"
           style={{ height: "var(--chat-input-height)" }}
-          placeholder={messages.length ? "Ask a follow-up…" : "Ask anything…"}
+          placeholder={messages.length ? "Ask a follow-up…" : isPanel ? "Ask a follow-up…" : "Ask anything…"}
           aria-label="Message"
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -283,13 +288,22 @@ export function ActiveChatScreen({
         <BottomSheet
           open={sheetOpen}
           onClose={() => setSheetOpen(false)}
-          title={activeCitation ? `Citation [${activeCitation.index}]` : "Citation"}
+          title={documentTitle}
+          subtitle={
+            activeCitation
+              ? `Page ${activeCitation.page} · Section ${activeCitation.index}`
+              : undefined
+          }
         >
           {activeCitation ? (
-            <>
-              <p className="text-xs text-[var(--text-tertiary)]">Page {activeCitation.page}</p>
-              <p className="mt-2 text-sm text-[var(--text-primary)]">{activeCitation.excerpt}</p>
-            </>
+            <blockquote className="figma-citation-quote">
+              <span className="text-xl font-bold leading-none text-[var(--brand-primary)]" aria-hidden>
+                &ldquo;
+              </span>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--text-primary)]">
+                {activeCitation.excerpt}
+              </p>
+            </blockquote>
           ) : null}
         </BottomSheet>
       ) : (
@@ -371,9 +385,11 @@ function MessageBubble({
           "max-w-[85%] text-sm leading-relaxed",
           isUser
             ? "figma-user-bubble max-w-[85%]"
-            : panel
-              ? "py-1 text-[var(--chat-assistant-text)]"
-              : "rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] px-4 py-3 text-[var(--chat-assistant-text)]",
+            : cn(
+                "figma-assistant-bubble max-w-[88%]",
+                !panel && "border border-[var(--border-default)]",
+                panel && "figma-assistant-bubble--panel",
+              ),
         )}
       >
         <p>{message.content}</p>

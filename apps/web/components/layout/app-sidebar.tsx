@@ -75,16 +75,16 @@ export function AppSidebar() {
               data-testid={`sidebar-nav-${item.label.toLowerCase()}`}
               data-active={active ? "true" : "false"}
               className={cn(
-                "interaction-press group relative flex items-center gap-3 rounded-[var(--radius-lg)] px-3 text-sm font-medium transition-colors duration-[var(--duration-fast)]",
+                "interaction-press group relative flex items-center gap-3 px-3 text-sm font-medium transition-colors duration-[var(--duration-fast)]",
                 active
-                  ? "text-[var(--sidebar-active-text)]"
-                  : "text-[var(--text-secondary)] hover:bg-[var(--surface-sunken)] hover:text-[var(--text-primary)]",
+                  ? "-mr-[var(--sidebar-padding-x)] rounded-none rounded-l-[var(--radius-lg)] pr-[calc(var(--sidebar-padding-x)+0.75rem)] text-[var(--sidebar-active-text)]"
+                  : "rounded-[var(--radius-lg)] text-[var(--text-secondary)] hover:bg-[var(--surface-sunken)] hover:text-[var(--text-primary)]",
               )}
               style={{ height: "var(--sidebar-nav-height)" }}
             >
               {active ? (
                 <span
-                  className="absolute inset-0 rounded-[var(--radius-lg)] bg-[var(--sidebar-active-bg)]"
+                  className="absolute inset-0 rounded-none rounded-l-[var(--radius-lg)] bg-[var(--sidebar-active-bg)]"
                   aria-hidden
                 />
               ) : null}
@@ -97,7 +97,7 @@ export function AppSidebar() {
         })}
       </nav>
 
-      <div className="mt-6 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-3.5">
+      <div className="mt-auto rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-3.5 shadow-[var(--shadow-sm)]">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-sm font-bold text-white">
             {initials}

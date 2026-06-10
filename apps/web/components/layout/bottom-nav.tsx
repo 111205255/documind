@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
-import { NAV_ITEMS } from "@/lib/constants";
+import { NAV_ITEMS, ROUTES } from "@/lib/constants";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
@@ -59,7 +59,12 @@ export function BottomNav() {
       <div className="mx-auto flex h-[var(--bottom-nav-height)] max-w-[var(--mobile-max-width)] items-stretch justify-around md:max-w-2xl lg:max-w-4xl">
         {NAV_ITEMS.map((item) => {
           const active =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
+            item.href === ROUTES.chat
+              ? pathname === ROUTES.chat ||
+                (pathname.startsWith("/chat/") && pathname !== ROUTES.chatHistory)
+              : item.href === ROUTES.home
+                ? pathname === ROUTES.home || pathname.startsWith("/documents")
+                : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link

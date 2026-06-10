@@ -2,21 +2,20 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ScreenHeader } from "@/components/layout/screen-header";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
+import { DocumentIcon, LinkIcon } from "@/components/brand/icons";
 import { FadeIn } from "@/components/motion/fade-in";
 import { ROUTES } from "@/lib/constants";
 import { uploadDocument } from "@/services/documents/upload-document";
 import { uploadUrlDocument } from "@/services/documents/upload-url-document";
 
-/** Frame 05 — upload to Supabase Storage (Blueprint Step 3) */
+/** Frame 05 — upload to Supabase Storage */
 export function UploadScreen() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [url, setUrl] = useState("");
+  const [showUrl, setShowUrl] = useState(false);
 
   const onUrl = async () => {
     setError(null);
@@ -45,55 +44,97 @@ export function UploadScreen() {
     }
   };
 
+  const options = [
+    {
+      title: "Upload a PDF",
+      subtitle: "Up to 50 MB",
+      onClick: () => inputRef.current?.click(),
+    },
+    {
+      title: "Upload Word document",
+      subtitle: ".docx or .doc",
+      onClick: () => inputRef.current?.click(),
+    },
+    {
+      title: "Paste a web link",
+      subtitle: "Any public article or page",
+      onClick: () => setShowUrl(true),
+    },
+  ];
+
   return (
-    <>
-      <ScreenHeader title="Upload" subtitle="PDF or Word · up to 50 MB" />
+    <div className="figma-content-stack">
       <FadeIn>
-        <Card
-          className="mt-6 flex cursor-pointer flex-col items-center border-dashed py-12 text-center"
-          onClick={() => !uploading && inputRef.current?.click()}
-        >
-          <p className="text-sm font-medium text-[var(--text-primary)]">
-            {uploading ? "Uploading…" : "Tap to select or drag a file"}
-          </p>
-          <p className="mt-1 text-xs text-[var(--text-tertiary)]">PDF, DOCX, or DOC</p>
-          <Button className="mt-6" variant="secondary" type="button" disabled={uploading}>
-            Choose file
-          </Button>
-          <input
-            ref={inputRef}
-            type="file"
-            className="hidden"
-            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            onChange={(e) => void onFile(e.target.files?.[0])}
-          />
-        </Card>
-        <Card className="mt-6 space-y-3 p-4">
-          <p className="text-sm font-medium text-[var(--text-primary)]">Or paste a web link</p>
-          <input
-            className="h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 text-sm"
-            placeholder="https://example.com/article"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            disabled={uploading}
-          />
-          <Button
+        <h1 className="figma-page-title">Upload document</h1>
+        <p className="figma-meta -mt-6">PDF, Word, or a web link</p>
+      </FadeIn>
+
+      <input
+        ref={inputRef}
+        type="file"
+        className="hidden"
+        accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        onChange={(e) => void onFile(e.target.files?.[0])}
+      />
+
+      {showUrl ? (
+        <FadeIn className="space-y-3">
+          <div className="relative">
+            <LinkIcon className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
+            <input
+              className="figma-search-input !max-w-none pl-11"
+              placeholder="https://example.com/article"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              disabled={uploading}
+            />
+          </div>
+          <button
             type="button"
-            variant="secondary"
-            fullWidth
             disabled={uploading || !url.trim()}
             onClick={() => void onUrl()}
+            className="figma-primary-btn w-full"
           >
-            Index link
-          </Button>
-        </Card>
+            {uploading ? "Indexing…" : "Index link"}
+          </button>
+          <button
+            type="button"
+            className="text-sm text-[var(--text-secondary)] hover:underline"
+            onClick={() => setShowUrl(false)}
+          >
+            Back
+          </button>
+        </FadeIn>
+      ) : (
+        <ul className="flex flex-col gap-3" data-testid="upload-options">
+          {options.map((opt, i) => (
+            <FadeIn key={opt.title} delay={i * 0.05}>
+              <li>
+                <button
+                  type="button"
+                  disabled={uploading}
+                  onClick={opt.onClick}
+                  className="hover-lift interaction-press flex w-full items-center gap-4 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-sunken)] p-5 text-left transition-all duration-[var(--duration-normal)] hover:border-[var(--border-focus)] disabled:opacity-60"
+                >
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[var(--radius-lg)] bg-gradient-to-b from-[var(--brand-gradient-from)] to-[var(--brand-gradient-to)] text-white">
+                    <DocumentIcon className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--text-primary)]">{opt.title}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">{opt.subtitle}</p>
+                  </div>
+                </button>
+              </li>
+            </FadeIn>
+          ))}
+        </ul>
+      )}
 
-        {error ? (
-          <p className="mt-4 text-center text-sm text-[var(--error)]" role="alert">
-            {error}
-          </p>
-        ) : null}
-      </FadeIn>
-    </>
+      {error ? (
+        <p className="text-sm text-[var(--error)]" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }

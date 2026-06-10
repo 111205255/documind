@@ -80,7 +80,7 @@ export function UploadModal() {
   ];
 
   return (
-    <Modal open={open} onClose={onClose} title="Add a document">
+    <Modal open={open} onClose={onClose} title="Upload document" subtitle="PDF, Word, or a web link">
       <input
         ref={fileRef}
         type="file"

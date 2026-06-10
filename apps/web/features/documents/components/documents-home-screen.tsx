@@ -40,11 +40,9 @@ export function DocumentsHomeScreen({
     <>
       {/* Desktop grid — frame 04 */}
       <div className="hidden h-full flex-col lg:flex" data-testid="documents-home-desktop">
-        <header className="mb-10 flex items-center justify-between gap-8">
+        <header className="figma-page-header">
           <h1 className="figma-page-title">Documents</h1>
-          <div className="w-full max-w-[20rem]">
-            <DocumentSearchBar value={search} onChange={setSearch} />
-          </div>
+          <DocumentSearchBar value={search} onChange={setSearch} className="figma-search-field shrink-0" />
         </header>
         <div
           className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"

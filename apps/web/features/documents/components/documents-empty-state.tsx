@@ -17,7 +17,7 @@ export function DocumentsEmptyState({ onUpload }: { onUpload?: () => void }) {
 
   return (
     <FadeIn
-      className="flex min-h-[calc(100dvh-12rem)] flex-col items-center justify-center py-16 text-center lg:min-h-[calc(100dvh-8rem)]"
+      className="flex min-h-[calc(100dvh-14rem)] flex-col items-center justify-center px-4 py-12 text-center lg:min-h-[calc(100dvh-10rem)] lg:py-16"
       data-testid="documents-empty-state"
     >
       <FloatingIcon>

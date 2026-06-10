@@ -17,29 +17,20 @@ export function AiThinkingBubble({
 
   return (
     <SlideUp>
-      <div className="flex justify-start">
-        <div
-          className="max-w-[88%] rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] px-4 py-3"
-          role="status"
-          aria-live="polite"
-          aria-label={isScanning ? `Scanning pages ${scanRange}` : "Searching the document"}
-        >
-          <div className="flex items-center gap-2.5">
-            {isScanning ? (
-              <DocumentScanIcon />
-            ) : (
-              <ThinkingDots />
-            )}
-            <span className="text-sm text-[var(--text-secondary)]">
-              {isScanning ? `Scanning pages ${scanRange}` : "Searching the document..."}
-            </span>
-          </div>
-          {!isScanning ? (
-            <div className="mt-2.5">
-              <SkeletonLines lines={2} gap={6} />
-            </div>
-          ) : null}
+      <div className="flex flex-col items-start gap-2">
+        <div className="flex items-center gap-2.5" role="status" aria-live="polite">
+          <span className="inline-flex rounded-full border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] px-3 py-2">
+            {isScanning ? <DocumentScanIcon /> : <ThinkingDots />}
+          </span>
+          <span className="figma-caption text-[var(--text-secondary)]">
+            {isScanning ? `Scanning pages ${scanRange}…` : "DocuMind is thinking…"}
+          </span>
         </div>
+        {!isScanning ? (
+          <div className="figma-assistant-bubble figma-assistant-bubble--panel max-w-[88%]">
+            <SkeletonLines lines={2} gap={6} />
+          </div>
+        ) : null}
       </div>
     </SlideUp>
   );

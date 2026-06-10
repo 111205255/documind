@@ -48,18 +48,19 @@ export function ChatHistoryScreen() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-3xl" data-testid="chat-history-screen">
+    <div className="mx-auto w-full max-w-[var(--dashboard-content-narrow)]" data-testid="chat-history-screen">
       <FadeIn>
-        <header className="mb-6 flex items-center justify-between gap-4">
-          <h1 className="text-3xl font-bold text-[var(--text-primary)]">Chats</h1>
-          <div className="relative w-full max-w-xs">
+        <header className="figma-page-header">
+          <h1 className="figma-page-title">History</h1>
+          <div className="figma-search-field shrink-0">
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--text-tertiary)]" />
             <input
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search chats"
-              className="h-10 w-full rounded-full border border-[var(--border-default)] bg-[var(--doc-search-bg)] pl-9 pr-3 text-sm text-[var(--text-primary)] transition-shadow duration-[var(--duration-fast)] placeholder:text-[var(--text-tertiary)] focus:border-[var(--brand-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--brand-primary)]/15"
+              aria-label="Search chats"
+              className="figma-search-input"
             />
           </div>
         </header>
@@ -78,7 +79,7 @@ export function ChatHistoryScreen() {
           {filtered.map((t, i) => (
             <FadeIn key={t.id} delay={i * 0.04}>
               <li>
-                <div className="hover-lift group flex items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 transition-all duration-[var(--duration-normal)] hover:border-[var(--border-focus)] hover:shadow-[var(--shadow-sm)]">
+                <div className="hover-lift group flex items-center gap-3 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-4 py-4 transition-all duration-[var(--duration-normal)] hover:border-[var(--border-focus)] hover:shadow-[var(--shadow-sm)]">
                   <Link href={ROUTES.chatThread(t.documentId)} className="flex min-w-0 flex-1 items-center gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-b from-[var(--brand-gradient-from)] to-[var(--brand-gradient-to)] text-white transition-transform duration-[var(--duration-fast)] group-hover:scale-105">
                       <DocumentIcon className="h-5 w-5" />

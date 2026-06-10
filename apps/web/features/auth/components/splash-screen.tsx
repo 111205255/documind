@@ -35,7 +35,7 @@ export function SplashScreen() {
       <div className="pointer-events-none absolute -left-28 -top-28 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
       <div className="pointer-events-none absolute -bottom-36 -right-20 h-96 w-96 rounded-full bg-white/10 blur-2xl" />
       <SplashBrand />
-      <AnimatedSplashDots className="absolute bottom-14" />
+      <AnimatedSplashDots className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))]" />
     </div>
   );
 }

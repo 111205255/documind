@@ -3,7 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { DocumentIcon } from "@/components/brand/icons";
+import {
+  ChevronRightIcon,
+  DocumentIcon,
+  EyeIcon,
+  ShareIcon,
+  TrashIcon,
+} from "@/components/brand/icons";
+import { FadeIn } from "@/components/motion/fade-in";
 import { ROUTES } from "@/lib/constants";
 import { formatFileSize } from "@/lib/format-file-size";
 import { formatRelativeTime } from "@/lib/format-relative-time";
@@ -65,72 +72,66 @@ export function DocumentDetailScreen({
     typeof window !== "undefined" ? `${window.location.origin}${ROUTES.chatThread(id)}` : undefined;
 
   return (
-    <div className="mx-auto w-full max-w-2xl">
-      <h1 className="mb-6 text-3xl font-bold text-[var(--text-primary)]">Document details</h1>
+    <FadeIn className="figma-content-stack">
+      <h1 className="figma-page-title">Document details</h1>
 
-      <div className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-5">
-        <div className="flex items-start gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[var(--radius-lg)] bg-gradient-to-b from-[var(--brand-gradient-from)] to-[var(--brand-gradient-to)] text-white">
-            <DocumentIcon className="h-6 w-6" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold text-[var(--text-primary)]">{title}</h2>
-            <p className="mt-1 text-sm text-[var(--text-secondary)]">{metaParts.join(" · ")}</p>
-          </div>
+      <div className="figma-doc-hero-card">
+        <div className="figma-doc-hero-icon">
+          <DocumentIcon className="h-7 w-7" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h2 className="figma-card-title text-lg">{title}</h2>
+          <p className="figma-meta mt-1">{metaParts.join(" · ")}</p>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3">
+      <div className="figma-stat-grid">
         {[
           { value: questionsCount, label: "Questions asked" },
           { value: "—", label: "Citations opened" },
           { value: updatedAt ? formatRelativeTime(updatedAt) : "—", label: "Last active" },
         ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-4 text-center"
-          >
-            <p className="text-xl font-bold text-[var(--text-primary)]">{stat.value}</p>
-            <p className="mt-1 text-xs text-[var(--text-secondary)]">{stat.label}</p>
+          <div key={stat.label} className="figma-stat-card">
+            <p className="figma-stat-value">{stat.value}</p>
+            <p className="figma-stat-label">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)]">
-        <Link
-          href={ROUTES.chatThread(id)}
-          className="flex items-center justify-between border-b border-[var(--border-default)] px-5 py-4 transition hover:bg-[var(--surface-sunken)]"
-        >
-          <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
-            <span className="text-[var(--text-secondary)]" aria-hidden>👁</span>
+      <div className="figma-action-list">
+        <Link href={ROUTES.chatThread(id)} className="figma-action-row hover-lift">
+          <span className="flex items-center gap-3">
+            <EyeIcon className="text-[var(--text-secondary)]" />
             View document
           </span>
-          <span className="text-[var(--text-tertiary)]">›</span>
+          <ChevronRightIcon className="text-[var(--text-tertiary)]" />
         </Link>
         <button
           type="button"
           onClick={() => setShareOpen(true)}
-          className="flex w-full items-center justify-between border-b border-[var(--border-default)] px-5 py-4 text-left transition hover:bg-[var(--surface-sunken)]"
+          className="figma-action-row hover-lift"
         >
-          <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
-            <span className="text-[var(--text-secondary)]" aria-hidden>↗</span>
+          <span className="flex items-center gap-3">
+            <ShareIcon className="text-[var(--text-secondary)]" />
             Share document
           </span>
-          <span className="text-[var(--text-tertiary)]">›</span>
+          <ChevronRightIcon className="text-[var(--text-tertiary)]" />
         </button>
         <button
           type="button"
           disabled={deleting}
           onClick={() => void onDelete()}
-          className="flex w-full items-center gap-3 px-5 py-4 text-left text-sm font-medium text-[var(--brand-primary)] transition hover:bg-[var(--surface-sunken)] disabled:opacity-50"
+          className="figma-action-row figma-action-row--destructive hover-lift disabled:opacity-50"
         >
-          <span aria-hidden>🗑</span>
-          {deleting ? "Deleting…" : "Delete document"}
+          <span className="flex items-center gap-3">
+            <TrashIcon />
+            {deleting ? "Deleting…" : "Delete document"}
+          </span>
         </button>
       </div>
 
       {error ? (
-        <p className="mt-4 text-center text-sm text-[var(--error)]" role="alert">
+        <p className="text-center text-sm text-[var(--error)]" role="alert">
           {error}
         </p>
       ) : null}
@@ -141,6 +142,6 @@ export function DocumentDetailScreen({
         shareUrl={shareUrl}
         documentTitle={title}
       />
-    </div>
+    </FadeIn>
   );
 }

@@ -75,5 +75,176 @@
     font-size: var(--text-sm);
     line-height: var(--leading-relaxed);
   }
+
+  /* Shared page chrome — frames 03–13 */
+  .figma-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+  }
+
+  .figma-page-header .figma-page-title {
+    margin: 0;
+  }
+
+  .figma-content-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: var(--dashboard-content-narrow);
+  }
+
+  .figma-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .figma-stat-card {
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .figma-stat-value {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--leading-tight);
+    color: var(--text-primary);
+  }
+
+  .figma-stat-label {
+    margin-top: var(--space-1);
+    font-size: var(--text-xs);
+    line-height: var(--leading-normal);
+    color: var(--text-secondary);
+  }
+
+  .figma-action-list {
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+  }
+
+  .figma-action-row {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--settings-row-padding-y) var(--settings-row-padding-x);
+    font-size: var(--text-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-primary);
+    text-align: left;
+    transition: background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .figma-action-row:hover {
+    background: var(--surface-sunken);
+  }
+
+  .figma-action-row + .figma-action-row {
+    border-top: 1px solid var(--border-default);
+  }
+
+  .figma-action-row--destructive {
+    color: var(--brand-primary);
+  }
+
+  .figma-doc-hero-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-4);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border-default);
+    background: var(--surface-raised);
+    padding: var(--space-5);
+  }
+
+  .figma-doc-hero-icon {
+    display: flex;
+    height: 3.5rem;
+    width: 3.5rem;
+    shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    background: linear-gradient(
+      180deg,
+      var(--brand-gradient-from),
+      var(--brand-gradient-to)
+    );
+    color: var(--text-inverse);
+  }
+
+  .figma-search-field {
+    position: relative;
+    width: 100%;
+    max-width: 20rem;
+  }
+
+  .figma-search-input {
+    height: var(--doc-search-height);
+    width: 100%;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--doc-search-border);
+    background: var(--doc-search-bg);
+    padding-left: 2.5rem;
+    padding-right: var(--space-4);
+    font-size: var(--text-sm);
+    color: var(--text-primary);
+    transition:
+      border-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .figma-search-input::placeholder {
+    color: var(--text-tertiary);
+  }
+
+  .figma-search-input:focus {
+    border-color: var(--brand-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-primary) 15%, transparent);
+  }
+
+  .figma-citation-quote {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--citation-border);
+    background: var(--citation-bg);
+    padding: var(--space-5) var(--space-5) var(--space-5) var(--space-6);
+  }
+
+  .figma-citation-quote::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--brand-primary);
+  }
+
+  .figma-assistant-bubble {
+    max-width: 88%;
+    border-radius: var(--chat-bubble-radius);
+    background: var(--chat-assistant-bg);
+    color: var(--chat-assistant-text);
+    padding: 0.75rem 1rem;
+    font-size: var(--text-sm);
+    line-height: var(--leading-relaxed);
+  }
+
+  .figma-assistant-bubble--panel {
+    border: 1px solid var(--border-default);
+  }
 }
 

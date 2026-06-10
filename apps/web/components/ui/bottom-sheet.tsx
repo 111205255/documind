@@ -9,6 +9,7 @@ export interface BottomSheetProps {
   open: boolean;
   onClose: () => void;
   title?: string;
+  subtitle?: string;
   children: ReactNode;
   className?: string;
 }
@@ -17,6 +18,7 @@ export function BottomSheet({
   open,
   onClose,
   title,
+  subtitle,
   children,
   className,
 }: BottomSheetProps) {
@@ -70,13 +72,20 @@ export function BottomSheet({
             <div className="flex justify-center py-3">
               <span className="h-1 w-10 rounded-full bg-[var(--border-strong)]" aria-hidden />
             </div>
-            {title ? (
-              <h2
-                id="sheet-title"
-                className="px-4 pb-2 text-lg font-semibold text-[var(--text-primary)]"
-              >
-                {title}
-              </h2>
+            {title || subtitle ? (
+              <div className="px-4 pb-3">
+                {title ? (
+                  <h2
+                    id="sheet-title"
+                    className="text-lg font-bold text-[var(--text-primary)]"
+                  >
+                    {title}
+                  </h2>
+                ) : null}
+                {subtitle ? (
+                  <p className="mt-0.5 text-sm font-medium text-[var(--brand-primary)]">{subtitle}</p>
+                ) : null}
+              </div>
             ) : null}
             <div className="px-4 pb-6">{children}</div>
           </motion.div>

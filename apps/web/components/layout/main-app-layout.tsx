@@ -9,7 +9,13 @@ import type { ReactNode } from "react";
 export function MainAppLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const fullWidth = pathname.startsWith("/chat/") && pathname !== ROUTES.chatHistory;
-  const wideContent = pathname === ROUTES.home;
+  const wideContent =
+    pathname === ROUTES.home ||
+    pathname === ROUTES.settings ||
+    pathname === ROUTES.chatHistory ||
+    (pathname.startsWith("/documents/") &&
+      !pathname.endsWith("/processing") &&
+      pathname !== ROUTES.upload);
 
   return (
     <DashboardShell fullWidth={fullWidth} wideContent={wideContent}>

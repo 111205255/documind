@@ -19,7 +19,7 @@ export function ErrorState({
 
   return (
     <motion.div
-      className="flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 text-center"
+      className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 py-12 text-center"
       data-testid="error-state"
       initial={reduced ? false : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}

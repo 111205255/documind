@@ -45,9 +45,9 @@ export function SettingsScreen() {
   const isDark = theme === "dark";
 
   return (
-    <div data-testid="settings-screen" className="max-w-2xl">
+    <div data-testid="settings-screen" className="figma-content-stack">
       <FadeIn>
-        <h1 className="figma-page-title mb-10">Settings</h1>
+        <h1 className="figma-page-title">Settings</h1>
       </FadeIn>
 
       <StaggerList style={{ gap: "var(--settings-card-gap)" }} className="flex flex-col">
@@ -63,11 +63,11 @@ export function SettingsScreen() {
               >
                 {initials}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-base font-semibold capitalize text-[var(--text-primary)]">
                   {displayName}
                 </p>
-                <p className="figma-meta">{displayEmail ?? "Not signed in"}</p>
+                <p className="figma-meta truncate">{displayEmail ?? "Not signed in"}</p>
               </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ export function SettingsScreen() {
         </StaggerItem>
       </StaggerList>
 
-      <p className="figma-caption mt-8 text-center">DocuMind v1.0.0</p>
+      <p className="figma-caption mt-2">DocuMind v1.0.0</p>
     </div>
   );
 }

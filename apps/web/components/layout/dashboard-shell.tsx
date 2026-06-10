@@ -26,7 +26,7 @@ export function DashboardShell({
       {/* Mobile — frames use bottom nav below lg */}
       <div className="flex min-h-dvh flex-col bg-[var(--surface-base)] lg:hidden">
         <main className="flex-1 pb-[calc(var(--bottom-nav-height)+env(safe-area-inset-bottom))]">
-          <div className="mx-auto w-full max-w-[var(--mobile-max-width)] px-[var(--space-4)] py-[var(--space-4)]">
+          <div className="mx-auto w-full max-w-[var(--mobile-max-width)] px-[var(--space-4)] pb-[var(--space-4)] pt-[var(--space-6)]">
             {children}
           </div>
         </main>

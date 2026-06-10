@@ -13,12 +13,9 @@ import {
   ingestUrlForRag,
 } from "@/services/api/ingest-document";
 import { getDocumentById } from "@/services/documents/get-document";
-import { useIsTabletUp } from "@/hooks/use-media-query";
-
 /** Figma frame 06 — processing with arc spinner + progress */
 export function ProcessingScreen({ documentId }: { documentId: string }) {
   const router = useRouter();
-  const isTabletUp = useIsTabletUp();
   const started = useRef(false);
   const [title, setTitle] = useState<string>();
   const [pageCount, setPageCount] = useState(0);
@@ -90,11 +87,7 @@ export function ProcessingScreen({ documentId }: { documentId: string }) {
 
   return (
     <FadeIn
-      className={
-        isTabletUp
-          ? "flex h-full flex-1 flex-col items-center justify-center text-center"
-          : "mt-8 flex flex-col items-center text-center"
-      }
+      className="mx-auto flex min-h-[calc(100dvh-12rem)] max-w-lg flex-col items-center justify-center px-4 py-12 text-center lg:min-h-[calc(100dvh-8rem)]"
       data-testid="processing-screen"
     >
       <ProcessingArcSpinner />

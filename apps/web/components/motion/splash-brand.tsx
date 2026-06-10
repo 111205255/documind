@@ -19,18 +19,19 @@ export function SplashBrand() {
         initial={reduced ? false : { opacity: 0, scale: 0.82, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         transition={spring}
-        className="flex h-[5.5rem] w-[5.5rem] items-center justify-center rounded-[1.375rem] bg-white/15 text-white shadow-[0_12px_40px_rgba(0,0,0,0.12)]"
+        className="flex items-center justify-center rounded-[var(--logo-radius)] bg-white/20 text-white shadow-[var(--logo-shadow)]"
+        style={{ width: "var(--logo-size-lg)", height: "var(--logo-size-lg)" }}
       >
         <motion.div
           animate={reduced ? undefined : { y: [0, -4, 0] }}
           transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
         >
-          <DocumentIcon className="h-10 w-10" />
+          <DocumentIcon className="h-11 w-11" />
         </motion.div>
       </motion.div>
 
       <motion.h1
-        className="mt-8 text-[2rem] font-bold tracking-tight"
+        className="mt-6 text-[2rem] font-bold tracking-tight"
         initial={reduced ? false : { opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...spring, delay: reduced ? 0 : 0.12 }}
@@ -39,7 +40,7 @@ export function SplashBrand() {
       </motion.h1>
 
       <motion.p
-        className="mt-3 max-w-xs text-base text-white/90"
+        className="mt-2 max-w-xs text-sm font-normal text-white/85"
         initial={reduced ? false : { opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ ...spring, delay: reduced ? 0 : 0.22 }}

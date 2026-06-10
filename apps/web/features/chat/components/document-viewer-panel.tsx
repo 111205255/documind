@@ -62,7 +62,7 @@ export function DocumentViewerPanel({
 
   return (
     <section className="flex min-w-0 flex-1 flex-col border-r border-[var(--panel-border)] bg-[var(--viewer-bg)]">
-      <header className="border-b border-[var(--panel-border)] px-6 py-5">
+      <header className="border-b border-[var(--panel-border)] px-[var(--chat-panel-padding)] py-4">
         <h2 className="truncate text-lg font-semibold leading-tight text-[var(--text-primary)]">
           {title}
         </h2>

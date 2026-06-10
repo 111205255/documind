@@ -170,6 +170,8 @@
   --dashboard-main-bg: #ffffff;
   --dashboard-main-padding: 2.5rem;
   --dashboard-content-max: 72rem;
+  --dashboard-content-narrow: 42rem;
+  --page-header-gap: 2.5rem;
   --panel-border: #ebebeb;
   --viewer-bg: #f5f5f7;
   --chat-panel-bg: #ffffff;
