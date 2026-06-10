@@ -23,10 +23,7 @@ export default defineConfig({
     },
     {
       name: "layout-audit",
-      use: {
-        ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/user.json",
-      },
+      use: { ...devices["Desktop Chrome"] },
       testMatch: /layout-audit\.spec\.ts/,
     },
     {
