@@ -69,8 +69,8 @@ test.describe("Figma frames — authenticated @desktop", () => {
     await expect(page.getByTestId("sidebar-nav-home")).toHaveAttribute("data-active", "true");
 
     const sidebarWidth = await sidebar.evaluate((el) => el.getBoundingClientRect().width);
-    expect(sidebarWidth).toBeGreaterThanOrEqual(270);
-    expect(sidebarWidth).toBeLessThanOrEqual(300);
+    expect(sidebarWidth).toBeGreaterThanOrEqual(256);
+    expect(sidebarWidth).toBeLessThanOrEqual(264);
 
     const mainPadding = await page.evaluate(() => {
       const main = document.querySelector("main");

@@ -6,10 +6,14 @@ import { ChatBubbleIcon, SendIcon, ShareIcon } from "@/components/brand/icons";
 import { CitationPill } from "@/components/ui/citation-pill";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { IconButton } from "@/components/ui/icon-button";
+import { FadeIn } from "@/components/motion/fade-in";
 import { FloatingIcon } from "@/components/motion/floating-icon";
 import { ThinkingDots } from "@/components/motion/thinking-dots";
 import { ThinkingSparkle } from "@/components/motion/thinking-sparkle";
 import { SlideUp } from "@/components/motion/slide-up";
+import { StaggerItem, StaggerList } from "@/components/motion/stagger-list";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { motion } from "framer-motion";
 import { ShareSheet } from "@/features/settings/components/share-sheet";
 import { ShareDocumentModal } from "@/features/settings/components/share-document-modal";
 import { useThinkingPhase } from "@/features/chat/hooks/use-thinking-phase";
@@ -52,6 +56,7 @@ export function ActiveChatScreen({
   }) => void;
 }) {
   const isPanel = layout === "panel";
+  const reducedMotion = useReducedMotion();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -200,10 +205,10 @@ export function ActiveChatScreen({
           </div>
         ) : null}
 
-        {!loading && messages.length === 0 && isPanel ? (
-          <div className="flex flex-col items-center px-2 text-center" data-testid="chat-empty-state">
+        {!loading && messages.length === 0 ? (
+          <FadeIn className={cn("flex flex-col items-center text-center", isPanel ? "px-2" : "pt-8")} data-testid="chat-empty-state">
             <FloatingIcon>
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)]">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)] shadow-[var(--doc-empty-icon-shadow)]">
                 <ChatBubbleIcon className="h-7 w-7" />
               </div>
             </FloatingIcon>
@@ -211,26 +216,16 @@ export function ActiveChatScreen({
             <p className="mt-2 max-w-xs text-sm text-[var(--text-secondary)]">
               Ask anything about this document — you&apos;ll get answers with exact page citations.
             </p>
-          </div>
-        ) : null}
-
-        {!loading && messages.length === 0 && !isPanel ? (
-          <div className="flex flex-col items-center pt-8 text-center" data-testid="chat-empty-state">
-            <FloatingIcon>
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)]">
-                <ChatBubbleIcon className="h-7 w-7" />
-              </div>
-            </FloatingIcon>
-            <p className="font-semibold text-[var(--text-primary)]">Start the conversation</p>
-            <p className="mt-2 max-w-xs text-sm text-[var(--text-secondary)]">
-              Ask anything about this document — you&apos;ll get answers with exact page citations.
-            </p>
-            <div className="mt-6 flex w-full flex-col gap-2">
-              {starters.map((q) => (
-                <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} />
-              ))}
-            </div>
-          </div>
+            {!isPanel ? (
+              <StaggerList className="mt-6 flex w-full flex-col gap-2">
+                {starters.map((q) => (
+                  <StaggerItem key={q}>
+                    <StarterChip label={q} onClick={() => void sendQuestion(q)} reducedMotion={reducedMotion} />
+                  </StaggerItem>
+                ))}
+              </StaggerList>
+            ) : null}
+          </FadeIn>
         ) : null}
 
         {messages.length > 0 ? (
@@ -254,7 +249,13 @@ export function ActiveChatScreen({
         {!thinking && followUps.length > 0 ? (
           <div className="flex flex-wrap gap-2 pt-2">
             {followUps.map((q) => (
-              <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} small />
+              <StarterChip
+                key={q}
+                label={q}
+                onClick={() => void sendQuestion(q)}
+                small
+                reducedMotion={reducedMotion}
+              />
             ))}
           </div>
         ) : null}
@@ -267,11 +268,18 @@ export function ActiveChatScreen({
       ) : null}
 
       {isPanel && !thinking ? (
-        <div className="mb-3 flex flex-wrap gap-2">
+        <StaggerList className="mb-3 flex flex-wrap gap-2">
           {starters.map((q) => (
-            <StarterChip key={q} label={q} onClick={() => void sendQuestion(q)} small />
+            <StaggerItem key={q}>
+              <StarterChip
+                label={q}
+                onClick={() => void sendQuestion(q)}
+                small
+                reducedMotion={reducedMotion}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerList>
       ) : null}
 
       <form
@@ -290,12 +298,25 @@ export function ActiveChatScreen({
           onChange={(e) => setInput(e.target.value)}
           disabled={thinking || loading}
         />
-        <button
+        <motion.button
           type="submit"
           disabled={thinking || loading || !input.trim()}
+          animate={
+            reducedMotion || thinking || !input.trim()
+              ? { scale: 1 }
+              : { scale: 1.06 }
+          }
+          whileHover={
+            reducedMotion || thinking || !input.trim()
+              ? undefined
+              : { scale: 1.1 }
+          }
+          whileTap={reducedMotion ? undefined : { scale: 0.95 }}
+          transition={{ type: "spring", damping: 22, stiffness: 400 }}
           className={cn(
             "interaction-press flex shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-white shadow-[var(--doc-fab-shadow)] transition disabled:opacity-50",
             thinking && "overflow-visible",
+            input.trim() && !thinking && "hover-brand-glow",
           )}
           aria-label={thinking ? "AI is thinking" : "Send"}
           data-testid="chat-send-button"
@@ -305,7 +326,7 @@ export function ActiveChatScreen({
           }}
         >
           {thinking ? <ThinkingSparkle active /> : <SendIcon className="h-[18px] w-[18px]" />}
-        </button>
+        </motion.button>
       </form>
 
       {!isPanel ? (
@@ -371,23 +392,28 @@ function StarterChip({
   label,
   onClick,
   small,
+  reducedMotion,
 }: {
   label: string;
   onClick: () => void;
   small?: boolean;
+  reducedMotion?: boolean;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileHover={reducedMotion ? undefined : { y: -2, scale: 1.02 }}
+      whileTap={reducedMotion ? undefined : { scale: 0.98 }}
+      transition={{ type: "spring", damping: 26, stiffness: 420 }}
       className={cn(
-        "interaction-press rounded-full border border-[var(--border-default)] bg-[var(--surface-sunken)] text-[var(--text-primary)] transition-all duration-[var(--duration-fast)] hover:border-[var(--brand-primary)] hover:bg-[var(--citation-bg)]",
+        "figma-starter-chip interaction-press text-[var(--text-primary)]",
         small ? "px-3 py-1.5 text-xs font-medium" : "w-full px-4 py-3 text-left text-sm",
       )}
       data-testid="starter-chip"
     >
       {label}
-    </button>
+    </motion.button>
   );
 }
 

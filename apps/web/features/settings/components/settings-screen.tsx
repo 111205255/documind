@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
 import {
   BellIcon,
   ChevronRightIcon,
@@ -15,6 +16,7 @@ import {
 import { AnimatedToggle } from "@/components/ui/animated-toggle";
 import { FadeIn } from "@/components/motion/fade-in";
 import { StaggerItem, StaggerList } from "@/components/motion/stagger-list";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ROUTES } from "@/lib/constants";
 import { createClient } from "@/services/supabase/client";
 import { useCurrentUser } from "@/hooks/use-current-user";
@@ -24,6 +26,7 @@ export function SettingsScreen() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
   const { email, initials } = useCurrentUser();
+  const reducedMotion = useReducedMotion();
   const [displayEmail, setDisplayEmail] = useState<string | null>(null);
   const [notifications, setNotifications] = useState(true);
 
@@ -52,7 +55,12 @@ export function SettingsScreen() {
 
       <StaggerList style={{ gap: "var(--settings-card-gap)" }} className="flex flex-col">
         <StaggerItem>
-          <div className="figma-surface-card p-5" data-testid="settings-card">
+          <motion.div
+            whileHover={reducedMotion ? undefined : { y: -2 }}
+            transition={{ type: "spring", damping: 28, stiffness: 400 }}
+            className="figma-surface-card p-5 transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-sm)]"
+            data-testid="settings-card"
+          >
             <div className="flex items-center gap-4">
               <div
                 className="flex shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-lg font-bold text-white"
@@ -70,13 +78,13 @@ export function SettingsScreen() {
                 <p className="figma-meta truncate">{displayEmail ?? "Not signed in"}</p>
               </div>
             </div>
-          </div>
+          </motion.div>
         </StaggerItem>
 
         <StaggerItem>
           <div className="figma-surface-card overflow-hidden" data-testid="settings-card">
             <div
-              className="flex items-center justify-between border-b border-[var(--border-default)]"
+              className="flex items-center justify-between border-b border-[var(--border-default)] transition-colors duration-[var(--duration-fast)] hover:bg-[var(--surface-sunken)]"
               style={{
                 paddingBlock: "var(--settings-row-padding-y)",
                 paddingInline: "var(--settings-row-padding-x)",
@@ -96,7 +104,7 @@ export function SettingsScreen() {
               />
             </div>
             <div
-              className="flex items-center justify-between"
+              className="flex items-center justify-between transition-colors duration-[var(--duration-fast)] hover:bg-[var(--surface-sunken)]"
               style={{
                 paddingBlock: "var(--settings-row-padding-y)",
                 paddingInline: "var(--settings-row-padding-x)",
@@ -117,55 +125,44 @@ export function SettingsScreen() {
 
         <StaggerItem>
           <div className="figma-surface-card overflow-hidden" data-testid="settings-card">
-            <Link
-              href="/terms"
-              className="hover-lift flex items-center justify-between border-b border-[var(--border-default)] transition-colors hover:bg-[var(--surface-sunken)]"
-              style={{
-                paddingBlock: "var(--settings-row-padding-y)",
-                paddingInline: "var(--settings-row-padding-x)",
-              }}
-            >
-              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+            <Link href="/terms" className="figma-action-row group">
+              <span className="flex items-center gap-3">
                 <LockIcon className="text-[var(--text-secondary)]" />
                 Privacy & security
               </span>
-              <ChevronRightIcon className="text-[var(--text-tertiary)]" />
+              <ChevronRightIcon className="figma-settings-chevron" />
             </Link>
-            <a
-              href="mailto:support@documind.app"
-              className="hover-lift flex items-center justify-between transition-colors hover:bg-[var(--surface-sunken)]"
-              style={{
-                paddingBlock: "var(--settings-row-padding-y)",
-                paddingInline: "var(--settings-row-padding-x)",
-              }}
-            >
-              <span className="flex items-center gap-3 text-sm font-medium text-[var(--text-primary)]">
+            <a href="mailto:support@documind.app" className="figma-action-row group">
+              <span className="flex items-center gap-3">
                 <HelpIcon className="text-[var(--text-secondary)]" />
                 Help & support
               </span>
-              <ChevronRightIcon className="text-[var(--text-tertiary)]" />
+              <ChevronRightIcon className="figma-settings-chevron" />
             </a>
           </div>
         </StaggerItem>
 
         <StaggerItem>
-          <button
+          <motion.button
             type="button"
             onClick={() => void signOut()}
+            whileHover={reducedMotion ? undefined : { y: -1 }}
+            whileTap={reducedMotion ? undefined : { scale: 0.99 }}
+            transition={{ type: "spring", damping: 28, stiffness: 420 }}
             data-testid="settings-card"
-            className="interaction-press figma-surface-card flex w-full items-center gap-3 text-sm font-medium text-[var(--brand-primary)] transition-colors hover:bg-[var(--surface-sunken)]"
-            style={{
-              paddingBlock: "var(--settings-row-padding-y)",
-              paddingInline: "var(--settings-row-padding-x)",
-            }}
+            className="interaction-press figma-surface-card figma-action-row figma-action-row--destructive w-full transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-sm)]"
           >
-            <LogoutIcon />
-            Sign out
-          </button>
+            <span className="flex items-center gap-3">
+              <LogoutIcon />
+              Sign out
+            </span>
+          </motion.button>
         </StaggerItem>
       </StaggerList>
 
-      <p className="figma-caption mt-2">DocuMind v1.0.0</p>
+      <FadeIn delay={0.2}>
+        <p className="figma-caption mt-2">DocuMind v1.0.0</p>
+      </FadeIn>
     </div>
   );
 }

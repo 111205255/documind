@@ -86,6 +86,16 @@
   .hover-lift:hover {
     transform: translateY(-2px);
   }
+
+  .animate-brand-glow {
+    animation: brand-glow 2.8s ease-in-out infinite;
+  }
+
+  .hover-brand-glow:hover {
+    box-shadow:
+      0 8px 28px var(--brand-glow),
+      0 0 0 4px color-mix(in srgb, var(--brand-primary) 12%, transparent);
+  }
 }
 
 @keyframes shimmer {
@@ -200,6 +210,18 @@
   }
 }
 
+@keyframes brand-glow {
+  0%,
+  100% {
+    box-shadow: var(--doc-fab-shadow);
+  }
+  50% {
+    box-shadow:
+      0 10px 32px var(--brand-glow),
+      0 0 0 3px color-mix(in srgb, var(--brand-primary) 10%, transparent);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-shimmer,
   .animate-thinking-dot,
@@ -212,7 +234,8 @@
   .animate-scan-highlight,
   .animate-scan-sweep,
   .animate-icon-pop,
-  .animate-nav-bounce {
+  .animate-nav-bounce,
+  .animate-brand-glow {
     animation: none;
   }
 
