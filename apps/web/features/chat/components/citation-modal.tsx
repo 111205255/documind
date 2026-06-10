@@ -19,7 +19,7 @@ export function CitationModal({
   if (!citation) return null;
 
   return (
-    <Modal open={open} onClose={onClose} className="max-w-lg !p-8">
+    <Modal open={open} onClose={onClose} className="max-w-lg">
       <button
         type="button"
         onClick={onClose}

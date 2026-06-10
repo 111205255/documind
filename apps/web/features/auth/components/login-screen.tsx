@@ -161,11 +161,11 @@ export function LoginScreen() {
             Sign in to upload documents and start chatting with them instantly.
           </p>
 
-          <div className="mt-8">
+          <div className="mt-6">
             <GoogleSignInButton onClick={handleGoogleSignIn} />
           </div>
 
-          <div className="my-6 flex items-center gap-3">
+          <div className="my-5 flex items-center gap-3">
             <div className="h-px flex-1 bg-[var(--border-default)]" />
             <span className="text-xs text-[var(--text-tertiary)]">or</span>
             <div className="h-px flex-1 bg-[var(--border-default)]" />
@@ -207,7 +207,7 @@ export function LoginScreen() {
             </button>
           </p>
 
-          <p className="mt-8 text-center text-xs leading-relaxed text-[var(--text-footer)]">
+          <p className="mt-6 text-center text-xs leading-relaxed text-[var(--text-footer)]">
             By continuing you agree to our{" "}
             <Link href="/terms" className="underline-offset-2 hover:underline">
               Terms & Privacy Policy

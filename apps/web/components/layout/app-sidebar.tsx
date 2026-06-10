@@ -41,11 +41,12 @@ export function AppSidebar() {
   return (
     <aside
       data-testid="app-sidebar"
-      className="flex h-full w-[var(--sidebar-width)] shrink-0 flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-[var(--sidebar-padding-x)] py-[var(--sidebar-padding-y)]"
+      className="flex h-full w-[var(--sidebar-width)] shrink-0 flex-col border-r border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] px-[var(--sidebar-padding-x)] pt-[var(--sidebar-padding-y)] pb-[calc(var(--sidebar-padding-y)+var(--sidebar-user-bottom))]"
     >
       <Link
         href={ROUTES.home}
-        className="hover-lift mb-8 flex items-center gap-3 rounded-[var(--radius-lg)]"
+        className="hover-lift flex items-center gap-3 rounded-[var(--radius-lg)]"
+        style={{ marginBottom: "var(--sidebar-section-gap)" }}
       >
         <AppLogo size="md" className="!h-10 !w-10 [&_svg]:!h-[18px] [&_svg]:!w-[18px]" />
         <span className="text-xl font-bold tracking-tight text-[var(--text-primary)]">{APP_NAME}</span>
@@ -57,15 +58,19 @@ export function AppSidebar() {
         whileHover={reducedMotion ? undefined : { scale: 1.01, y: -1 }}
         whileTap={reducedMotion ? undefined : { scale: 0.98 }}
         transition={{ type: "spring", damping: 26, stiffness: 420 }}
-        className="interaction-press mb-8 flex w-full items-center justify-center gap-2 rounded-[var(--radius-xl)] bg-[var(--brand-primary)] text-sm font-semibold text-white shadow-[var(--doc-fab-shadow)] hover:bg-[var(--brand-primary-hover)]"
-        style={{ height: "var(--sidebar-upload-height)" }}
+        className="interaction-press flex w-full items-center justify-center gap-2 rounded-[var(--radius-xl)] bg-[var(--brand-primary)] text-sm font-semibold text-white shadow-[var(--doc-fab-shadow)] hover:bg-[var(--brand-primary-hover)]"
+        style={{ height: "var(--sidebar-upload-height)", marginBottom: "var(--sidebar-section-gap)" }}
         data-testid="sidebar-upload-btn"
       >
         <span className="text-lg leading-none">+</span>
         Upload document
       </motion.button>
 
-      <nav className="flex flex-1 flex-col gap-1.5" aria-label="Main">
+      <nav
+        className="flex flex-1 flex-col"
+        style={{ gap: "var(--sidebar-nav-gap)" }}
+        aria-label="Main"
+      >
         {NAV.map((item) => {
           const active = item.match(pathname);
           return (
@@ -97,7 +102,10 @@ export function AppSidebar() {
         })}
       </nav>
 
-      <div className="mt-auto rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-3.5 shadow-[var(--shadow-sm)]">
+      <div
+        data-testid="sidebar-user-card"
+        className="mt-auto rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-3.5 shadow-[var(--shadow-sm)]"
+      >
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-sm font-bold text-white">
             {initials}

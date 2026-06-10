@@ -47,12 +47,12 @@ export function SettingsScreen() {
   return (
     <div data-testid="settings-screen" className="figma-content-stack">
       <FadeIn>
-        <h1 className="figma-page-title">Settings</h1>
+        <h1 className="figma-page-title m-0">Settings</h1>
       </FadeIn>
 
       <StaggerList style={{ gap: "var(--settings-card-gap)" }} className="flex flex-col">
         <StaggerItem>
-          <div className="figma-surface-card p-5">
+          <div className="figma-surface-card p-5" data-testid="settings-card">
             <div className="flex items-center gap-4">
               <div
                 className="flex shrink-0 items-center justify-center rounded-full bg-[var(--brand-primary)] text-lg font-bold text-white"
@@ -74,7 +74,7 @@ export function SettingsScreen() {
         </StaggerItem>
 
         <StaggerItem>
-          <div className="figma-surface-card overflow-hidden">
+          <div className="figma-surface-card overflow-hidden" data-testid="settings-card">
             <div
               className="flex items-center justify-between border-b border-[var(--border-default)]"
               style={{
@@ -116,7 +116,7 @@ export function SettingsScreen() {
         </StaggerItem>
 
         <StaggerItem>
-          <div className="figma-surface-card overflow-hidden">
+          <div className="figma-surface-card overflow-hidden" data-testid="settings-card">
             <Link
               href="/terms"
               className="hover-lift flex items-center justify-between border-b border-[var(--border-default)] transition-colors hover:bg-[var(--surface-sunken)]"
@@ -152,6 +152,7 @@ export function SettingsScreen() {
           <button
             type="button"
             onClick={() => void signOut()}
+            data-testid="settings-card"
             className="interaction-press figma-surface-card flex w-full items-center gap-3 text-sm font-medium text-[var(--brand-primary)] transition-colors hover:bg-[var(--surface-sunken)]"
             style={{
               paddingBlock: "var(--settings-row-padding-y)",

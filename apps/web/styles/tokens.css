@@ -160,7 +160,10 @@
   /* Desktop dashboard */
   --sidebar-width: 17rem;
   --sidebar-padding-x: 1.5rem;
-  --sidebar-padding-y: 2rem;
+  --sidebar-padding-y: 1.75rem;
+  --sidebar-section-gap: 1.5rem;
+  --sidebar-nav-gap: 0.375rem;
+  --sidebar-user-bottom: 0.5rem;
   --sidebar-bg: #f8f9fa;
   --sidebar-border: #ececec;
   --sidebar-active-bg: #fff0ee;
@@ -172,6 +175,10 @@
   --dashboard-content-max: 72rem;
   --dashboard-content-narrow: 42rem;
   --page-header-gap: 2.5rem;
+  --modal-padding: 2rem;
+  --modal-header-gap: 1.25rem;
+  --modal-section-gap: 1.5rem;
+  --upload-option-gap: 0.75rem;
   --panel-border: #ebebeb;
   --viewer-bg: #f5f5f7;
   --chat-panel-bg: #ffffff;

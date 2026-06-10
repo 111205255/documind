@@ -22,6 +22,14 @@ export default defineConfig({
       testMatch: /frames\.spec\.ts/,
     },
     {
+      name: "layout-audit",
+      use: {
+        ...devices["Desktop Chrome"],
+        storageState: "e2e/.auth/user.json",
+      },
+      testMatch: /layout-audit\.spec\.ts/,
+    },
+    {
       name: "mobile-chrome",
       use: { ...devices["Pixel 7"] },
       testIgnore: /authenticated\.spec\.ts/,

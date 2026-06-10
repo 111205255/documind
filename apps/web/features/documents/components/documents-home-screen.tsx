@@ -40,13 +40,14 @@ export function DocumentsHomeScreen({
     <>
       {/* Desktop grid — frame 04 */}
       <div className="hidden h-full flex-col lg:flex" data-testid="documents-home-desktop">
-        <header className="figma-page-header">
-          <h1 className="figma-page-title">Documents</h1>
+        <header className="figma-page-header" data-testid="documents-page-header">
+          <h1 className="figma-page-title m-0">Documents</h1>
           <DocumentSearchBar value={search} onChange={setSearch} className="figma-search-field shrink-0" />
         </header>
         <div
           className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
           style={{ gap: "var(--doc-card-gap)" }}
+          data-testid="documents-grid"
         >
           {filtered.map((doc, i) => (
             <FadeIn key={doc.id} delay={i * 0.03}>

@@ -91,7 +91,7 @@ test.describe("Figma frames — authenticated @desktop", () => {
 
   test("frame 12 history page layout", async ({ page }) => {
     await page.goto("/chat/history");
-    await expect(page.getByRole("heading", { name: "Chats" })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "History" })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByPlaceholder("Search chats")).toBeVisible();
     await expect(page.getByTestId("sidebar-nav-history")).toHaveAttribute("data-active", "true");
   });

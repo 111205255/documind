@@ -50,57 +50,55 @@ export function ShareDocumentModal({
       onClose={onClose}
       title="Share document"
       subtitle="Anyone with the link can view this document."
-      className="!p-8"
     >
-      <div className="flex items-stretch gap-2 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] p-2 pl-4">
-        <LinkIcon className="mt-3 shrink-0 self-start text-[var(--text-tertiary)]" />
-        <span className="min-w-0 flex-1 self-center truncate py-2 text-sm text-[var(--text-secondary)]">
-          {shareUrl}
-        </span>
-        <button
-          type="button"
-          onClick={() => void copyLink()}
-          className="interaction-press shrink-0 self-center rounded-[var(--radius-md)] bg-[var(--brand-primary)] px-5 py-2.5 text-sm font-semibold text-white transition"
-          data-testid="share-copy-button"
-        >
-          {copied ? "Copied!" : "Copy"}
+      <div className="figma-modal-body">
+        <div className="flex items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 py-2.5">
+          <LinkIcon className="shrink-0 text-[var(--text-tertiary)]" />
+          <span className="min-w-0 flex-1 truncate text-sm text-[var(--text-secondary)]">{shareUrl}</span>
+          <button
+            type="button"
+            onClick={() => void copyLink()}
+            className="interaction-press shrink-0 rounded-[var(--radius-md)] bg-[var(--brand-primary)] px-4 py-2 text-sm font-semibold text-white"
+            data-testid="share-copy-button"
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+
+        <div>
+          <p className="mb-3 text-xs font-medium text-[var(--text-tertiary)]">Or share via</p>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Email", icon: EmailIcon, action: email },
+              { label: "WhatsApp", icon: WhatsAppIcon, action: whatsapp },
+              { label: "Copy link", icon: LinkIcon, action: () => void copyLink() },
+            ].map((item) => (
+              <button
+                key={item.label}
+                type="button"
+                onClick={item.action}
+                className="hover-lift interaction-press flex flex-col items-center justify-center gap-2 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-2 py-4 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--border-focus)]"
+              >
+                <item.icon className="text-[var(--brand-primary)]" />
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex items-center justify-between rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 py-3.5">
+          <span className="text-sm font-medium text-[var(--text-primary)]">Allow downloads</span>
+          <AnimatedToggle
+            label="Allow downloads"
+            checked={allowDownloads}
+            onChange={setAllowDownloads}
+          />
+        </div>
+
+        <button type="button" onClick={onClose} className="interaction-press figma-primary-btn w-full">
+          Done
         </button>
       </div>
-
-      <p className="mt-6 text-xs font-medium text-[var(--text-tertiary)]">Or share via</p>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        {[
-          { label: "Email", icon: EmailIcon, action: email },
-          { label: "WhatsApp", icon: WhatsAppIcon, action: whatsapp },
-        ].map((item) => (
-          <button
-            key={item.label}
-            type="button"
-            onClick={item.action}
-            className="hover-lift interaction-press flex flex-col items-center gap-2 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-sunken)] py-5 text-sm font-medium text-[var(--text-primary)] transition hover:border-[var(--border-focus)]"
-          >
-            <item.icon className="text-[var(--brand-primary)]" />
-            {item.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-6 flex items-center justify-between rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 py-3.5">
-        <span className="text-sm font-medium text-[var(--text-primary)]">Allow downloads</span>
-        <AnimatedToggle
-          label="Allow downloads"
-          checked={allowDownloads}
-          onChange={setAllowDownloads}
-        />
-      </div>
-
-      <button
-        type="button"
-        onClick={onClose}
-        className="interaction-press figma-primary-btn mt-8 w-full"
-      >
-        Done
-      </button>
     </Modal>
   );
 }

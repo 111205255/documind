@@ -102,7 +102,7 @@ export function ProcessingScreen({ documentId }: { documentId: string }) {
           data-testid="processing-progress"
         />
       </div>
-      <p className="figma-caption mt-4" data-testid="processing-status">
+      <p className="mt-4 text-sm text-[var(--text-secondary)]" data-testid="processing-status">
         {statusLine}
       </p>
     </FadeIn>

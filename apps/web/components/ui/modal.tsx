@@ -61,9 +61,10 @@ export function Modal({
             aria-modal="true"
             aria-labelledby={title ? "modal-title" : undefined}
             className={cn(
-              "relative z-10 w-full max-w-md rounded-[var(--radius-2xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] p-6 shadow-[var(--shadow-lg)]",
+              "relative z-10 w-full max-w-md rounded-[var(--radius-2xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] shadow-[var(--shadow-lg)]",
               className,
             )}
+            style={{ padding: "var(--modal-padding)" }}
             initial={{ opacity: 0, scale: 0.94, y: 12 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -71,21 +72,24 @@ export function Modal({
             data-testid="modal-panel"
           >
             {(title || subtitle) && (
-              <div className="mb-6 flex items-start justify-between gap-3">
-                <div>
+              <div
+                className="flex items-center justify-between gap-3"
+                style={{ marginBottom: "var(--modal-header-gap)" }}
+              >
+                <div className="min-w-0 flex-1">
                   {title ? (
-                    <h2 id="modal-title" className="text-lg font-bold text-[var(--text-primary)]">
+                    <h2 id="modal-title" className="text-lg font-bold leading-tight text-[var(--text-primary)]">
                       {title}
                     </h2>
                   ) : null}
                   {subtitle ? (
-                    <p className="mt-1 text-sm text-[var(--text-secondary)]">{subtitle}</p>
+                    <p className="mt-1 text-sm leading-snug text-[var(--text-secondary)]">{subtitle}</p>
                   ) : null}
                 </div>
                 <button
                   type="button"
                   onClick={onClose}
-                  className="interaction-press flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--surface-sunken)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                  className="interaction-press flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--surface-sunken)] text-lg leading-none text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   aria-label="Close dialog"
                 >
                   ×

@@ -186,7 +186,14 @@ export function ActiveChatScreen({
         ) : null}
       </header>
 
-      <div className="flex-1 space-y-4 overflow-y-auto py-4" role="log" aria-live="polite">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-y-auto py-4",
+          !loading && messages.length === 0 && isPanel && "justify-center",
+        )}
+        role="log"
+        aria-live="polite"
+      >
         {loading ? (
           <div className="flex items-center justify-center py-12">
             <ThinkingDots />
@@ -194,10 +201,17 @@ export function ActiveChatScreen({
         ) : null}
 
         {!loading && messages.length === 0 && isPanel ? (
-          <p className="text-sm leading-relaxed text-[var(--text-primary)]" data-testid="chat-welcome-message">
-            Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to the exact
-            page.
-          </p>
+          <div className="flex flex-col items-center px-2 text-center" data-testid="chat-empty-state">
+            <FloatingIcon>
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--citation-bg)] text-[var(--brand-primary)]">
+                <ChatBubbleIcon className="h-7 w-7" />
+              </div>
+            </FloatingIcon>
+            <p className="font-semibold text-[var(--text-primary)]">Start the conversation</p>
+            <p className="mt-2 max-w-xs text-sm text-[var(--text-secondary)]">
+              Ask anything about this document — you&apos;ll get answers with exact page citations.
+            </p>
+          </div>
         ) : null}
 
         {!loading && messages.length === 0 && !isPanel ? (
@@ -219,11 +233,21 @@ export function ActiveChatScreen({
           </div>
         ) : null}
 
-        {messages.map((msg) => (
-          <SlideUp key={msg.id}>
-            <MessageBubble message={msg} onCitationClick={openCitation} panel={isPanel} />
-          </SlideUp>
-        ))}
+        {messages.length > 0 ? (
+          <div className="space-y-4">
+            {isPanel ? (
+              <p className="text-sm leading-relaxed text-[var(--text-primary)]" data-testid="chat-welcome-message">
+                Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to the
+                exact page.
+              </p>
+            ) : null}
+            {messages.map((msg) => (
+              <SlideUp key={msg.id}>
+                <MessageBubble message={msg} onCitationClick={openCitation} panel={isPanel} />
+              </SlideUp>
+            ))}
+          </div>
+        ) : null}
 
         {thinking ? <AiThinkingBubble phase={thinkingPhase} scanRange={scanRange} /> : null}
 
