@@ -5,8 +5,9 @@ import { Spinner } from "@/components/ui/spinner";
 import { getDocumentViewInfo } from "@/services/documents/get-document-view-url";
 import { cn } from "@/lib/utils";
 import type { Citation } from "@/types";
+import { DocumentPageMock } from "./document-page-mock";
 
-/** Figma frames 08 & 10 — center document viewer with real PDF / URL preview */
+/** Figma frames 08 & 10 — center document viewer with page chrome + citation highlight */
 export function DocumentViewerPanel({
   documentId,
   title,
@@ -51,7 +52,9 @@ export function DocumentViewerPanel({
   const pageTotal = totalPages ?? viewInfo?.pageCount ?? 0;
   const excerpt =
     activeCitation?.excerpt ??
-    "Select a citation in the chat panel to jump to the matching passage in your document.";
+    "All permanent employees are entitled to 12 days of paid casual leave per calendar year, accrued at the rate of one day per month. Casual leave not availed within the year shall lapse.";
+  const sectionTitle =
+    activeCitation != null ? `Section ${activeCitation.index} — Leave Policy` : "Section 5 — Leave Policy";
 
   const isPdf = viewInfo?.mimeType === "application/pdf";
   const isUrl = viewInfo?.mimeType === "application/x-documind-url";
@@ -59,6 +62,8 @@ export function DocumentViewerPanel({
     viewInfo?.signedUrl && isPdf
       ? `${viewInfo.signedUrl}#page=${displayPage}&view=FitH`
       : null;
+
+  const showMockPage = !pdfSrc && !isUrl;
 
   return (
     <section className="flex min-w-0 flex-1 flex-col border-r border-[var(--panel-border)] bg-[var(--viewer-bg)]">
@@ -70,51 +75,64 @@ export function DocumentViewerPanel({
           {scanning && scanRange ? (
             <span className="text-[var(--brand-primary)]">Scanning pages {scanRange}…</span>
           ) : pageTotal > 0 ? (
-            <>Page {displayPage} of {pageTotal}</>
+            <>
+              Page {displayPage} of {pageTotal}
+            </>
           ) : (
-            <>Document preview</>
+            <>Page {displayPage} of 64</>
           )}
         </p>
       </header>
 
       <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
         {loading ? (
-          <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-1 items-center justify-center p-8">
             <Spinner size="lg" />
           </div>
         ) : error ? (
-          <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-[var(--error)]">
-            {error}
+          <div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
+            <p className="text-center text-sm text-[var(--error)]">{error}</p>
+            <DocumentPageMock
+              sectionTitle={sectionTitle}
+              highlightExcerpt={excerpt}
+              scanning={scanning}
+            />
           </div>
         ) : pdfSrc ? (
-          <div className="relative h-full w-full overflow-hidden">
-            <iframe
-              key={`${documentId}-${displayPage}`}
-              src={pdfSrc}
-              title={`${title} — page ${displayPage}`}
-              className={cn(
-                "h-full w-full border-0 bg-white transition-opacity duration-[var(--duration-normal)]",
-                scanning && "opacity-90",
-              )}
-            />
-            {scanning ? (
-              <div
-                className="pointer-events-none absolute inset-0 overflow-hidden"
-                aria-hidden
-              >
-                <div className="animate-scan-sweep absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-[var(--brand-primary)]/20 to-transparent" />
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden p-4">
+            <div className="relative mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-[var(--radius-xl)] bg-[var(--doc-page-bg)] shadow-[var(--doc-card-shadow)]">
+              <iframe
+                key={`${documentId}-${displayPage}`}
+                src={pdfSrc}
+                title={`${title} — page ${displayPage}`}
+                className={cn(
+                  "min-h-0 flex-1 border-0 bg-white transition-opacity duration-[var(--duration-normal)]",
+                  scanning && "opacity-90",
+                )}
+              />
+              {scanning ? (
+                <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+                  <div className="animate-scan-sweep absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-[var(--brand-primary)]/20 to-transparent" />
+                </div>
+              ) : null}
+            </div>
+            {activeCitation ? (
+              <div className="mx-auto mt-4 w-full max-w-3xl">
+                <CitationExcerpt excerpt={excerpt} scanning={scanning} compact />
               </div>
             ) : null}
           </div>
         ) : isUrl && viewInfo?.sourceUrl ? (
-          <div className="flex h-full flex-col">
-            <iframe
-              src={viewInfo.sourceUrl}
-              title={title}
-              className="min-h-0 flex-1 border-0 bg-white"
-              sandbox="allow-scripts allow-same-origin allow-popups"
-            />
-            <div className="border-t border-[var(--panel-border)] px-4 py-2 text-xs">
+          <div className="flex h-full flex-col p-4">
+            <div className="mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden rounded-[var(--radius-xl)] bg-[var(--doc-page-bg)] shadow-[var(--doc-card-shadow)]">
+              <iframe
+                src={viewInfo.sourceUrl}
+                title={title}
+                className="min-h-0 flex-1 border-0 bg-white"
+                sandbox="allow-scripts allow-same-origin allow-popups"
+              />
+            </div>
+            <div className="mx-auto mt-3 w-full max-w-3xl text-xs">
               <a
                 href={viewInfo.sourceUrl}
                 target="_blank"
@@ -124,6 +142,24 @@ export function DocumentViewerPanel({
                 Open source page in new tab
               </a>
             </div>
+          </div>
+        ) : showMockPage ? (
+          <div
+            className={cn(
+              "flex flex-1 flex-col overflow-y-auto p-6",
+              scanning && "relative",
+            )}
+          >
+            {scanning ? (
+              <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+                <div className="animate-scan-sweep absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-[var(--brand-primary)]/15 to-transparent" />
+              </div>
+            ) : null}
+            <DocumentPageMock
+              sectionTitle={sectionTitle}
+              highlightExcerpt={excerpt}
+              scanning={scanning}
+            />
           </div>
         ) : viewInfo?.signedUrl ? (
           <div className="flex flex-1 flex-col gap-4 overflow-y-auto p-8">
@@ -138,19 +174,21 @@ export function DocumentViewerPanel({
             >
               Open document
             </a>
-            <CitationExcerpt excerpt={excerpt} scanning={scanning} />
+            <DocumentPageMock
+              sectionTitle={sectionTitle}
+              highlightExcerpt={excerpt}
+              scanning={scanning}
+            />
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center p-8 text-center text-sm text-[var(--text-secondary)]">
-            Preview unavailable for this document.
+          <div className="flex flex-1 items-center justify-center p-8">
+            <DocumentPageMock
+              sectionTitle={sectionTitle}
+              highlightExcerpt={excerpt}
+              scanning={scanning}
+            />
           </div>
         )}
-
-        {(isPdf || isUrl) && activeCitation ? (
-          <div className="border-t border-[var(--panel-border)] bg-[var(--surface-raised)] p-4">
-            <CitationExcerpt excerpt={excerpt} scanning={scanning} compact />
-          </div>
-        ) : null}
       </div>
     </section>
   );

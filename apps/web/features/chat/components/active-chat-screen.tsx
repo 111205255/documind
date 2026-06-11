@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { ChatBubbleIcon, SendIcon, ShareIcon } from "@/components/brand/icons";
 import { CitationPill } from "@/components/ui/citation-pill";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
@@ -56,6 +57,7 @@ export function ActiveChatScreen({
   }) => void;
 }) {
   const isPanel = layout === "panel";
+  const { resolvedTheme } = useTheme();
   const reducedMotion = useReducedMotion();
   const [threadId, setThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -231,14 +233,34 @@ export function ActiveChatScreen({
         {messages.length > 0 ? (
           <div className="space-y-4">
             {isPanel ? (
-              <p className="text-sm leading-relaxed text-[var(--text-primary)]" data-testid="chat-welcome-message">
-                Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to the
-                exact page.
-              </p>
+              resolvedTheme === "dark" ? (
+                <div
+                  className="figma-assistant-bubble figma-assistant-bubble--panel max-w-[88%]"
+                  data-testid="chat-welcome-message"
+                >
+                  <p>
+                    Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to
+                    the exact page.
+                  </p>
+                </div>
+              ) : (
+                <p
+                  className="text-sm leading-relaxed text-[var(--text-primary)]"
+                  data-testid="chat-welcome-message"
+                >
+                  Hi! I&apos;ve read {documentTitle}. Ask me anything and I&apos;ll point you to the
+                  exact page.
+                </p>
+              )
             ) : null}
             {messages.map((msg) => (
               <SlideUp key={msg.id}>
-                <MessageBubble message={msg} onCitationClick={openCitation} panel={isPanel} />
+                <MessageBubble
+                  message={msg}
+                  onCitationClick={openCitation}
+                  panel={isPanel}
+                  isDark={resolvedTheme === "dark"}
+                />
               </SlideUp>
             ))}
           </div>
@@ -421,41 +443,46 @@ function MessageBubble({
   message,
   onCitationClick,
   panel,
+  isDark,
 }: {
   message: ChatMessage;
   onCitationClick: (c: Citation) => void;
   panel?: boolean;
+  isDark?: boolean;
 }) {
   const isUser = message.role === "user";
+  const assistantPlain = panel && !isDark;
 
   return (
-    <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
+    <div className={cn("flex flex-col", isUser ? "items-end" : "items-start")}>
       <div
         className={cn(
           "max-w-[85%] text-sm leading-relaxed",
           isUser
-            ? "figma-user-bubble max-w-[85%]"
-            : cn(
-                "figma-assistant-bubble max-w-[88%]",
-                !panel && "border border-[var(--border-default)]",
-                panel && "figma-assistant-bubble--panel",
-              ),
+            ? "figma-user-bubble"
+            : assistantPlain
+              ? "max-w-full text-[var(--text-primary)]"
+              : cn(
+                  "figma-assistant-bubble max-w-[88%]",
+                  !panel && "border border-[var(--border-default)]",
+                  panel && "figma-assistant-bubble--panel",
+                ),
         )}
       >
         <p>{message.content}</p>
-        {message.citations?.length ? (
-          <div className="mt-2 flex flex-wrap gap-1">
-            {message.citations.map((c) => (
-              <CitationPill
-                key={c.id}
-                index={c.index}
-                page={c.page}
-                onClick={() => onCitationClick(c)}
-              />
-            ))}
-          </div>
-        ) : null}
       </div>
+      {!isUser && message.citations?.length ? (
+        <div className="mt-2 flex max-w-[88%] flex-wrap gap-1.5">
+          {message.citations.map((c) => (
+            <CitationPill
+              key={c.id}
+              index={c.index}
+              page={c.page}
+              onClick={() => onCitationClick(c)}
+            />
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

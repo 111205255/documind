@@ -35,7 +35,7 @@ export function CitationModal({
         <div className="min-w-0 flex-1">
           <p className="truncate text-lg font-bold text-[var(--text-primary)]">{documentTitle}</p>
           <p className="mt-0.5 text-sm font-medium text-[var(--brand-primary)]">
-            Page {citation.page} · Section {citation.index}
+            Page {citation.page} · Section {citation.index}: Leave Policy
           </p>
         </div>
       </div>

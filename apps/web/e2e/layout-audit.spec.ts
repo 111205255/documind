@@ -166,7 +166,7 @@ test.describe("Layout audit — authenticated @desktop", () => {
 
   test("history page title matches sidebar nav", async ({ page }) => {
     await page.goto("/chat/history");
-    await expect(page.getByRole("heading", { name: "History" })).toBeVisible({ timeout: 15_000 });
+    await expect(page.getByRole("heading", { name: "Chats" })).toBeVisible({ timeout: 15_000 });
     await expect(page.getByTestId("sidebar-nav-history")).toHaveAttribute("data-active", "true");
   });
 });

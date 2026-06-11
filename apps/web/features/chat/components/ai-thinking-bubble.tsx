@@ -2,10 +2,9 @@
 
 import { ThinkingDots } from "@/components/motion/thinking-dots";
 import { SlideUp } from "@/components/motion/slide-up";
-import { SkeletonLines } from "@/components/ui/skeleton-lines";
 import type { ThinkingPhase } from "@/features/chat/hooks/use-thinking-phase";
 
-/** Figma frame 10 — AI thinking bubble with skeleton + scanning phases */
+/** Figma frame 10 — AI thinking: dots pill stacked above caption */
 export function AiThinkingBubble({
   phase,
   scanRange,
@@ -17,20 +16,17 @@ export function AiThinkingBubble({
 
   return (
     <SlideUp>
-      <div className="flex flex-col items-start gap-2">
-        <div className="flex items-center gap-2.5" role="status" aria-live="polite">
-          <span className="inline-flex rounded-full border border-[var(--border-default)] bg-[var(--chat-assistant-bg)] px-3 py-2">
-            {isScanning ? <DocumentScanIcon /> : <ThinkingDots />}
-          </span>
-          <span className="figma-caption text-[var(--text-secondary)]">
-            {isScanning ? `Scanning pages ${scanRange}…` : "DocuMind is thinking…"}
-          </span>
-        </div>
-        {!isScanning ? (
-          <div className="figma-assistant-bubble figma-assistant-bubble--panel max-w-[88%]">
-            <SkeletonLines lines={2} gap={6} />
-          </div>
-        ) : null}
+      <div
+        className="flex flex-col items-start gap-1.5"
+        role="status"
+        aria-live="polite"
+      >
+        <span className="inline-flex rounded-full bg-[var(--surface-sunken)] px-3 py-2">
+          {isScanning ? <DocumentScanIcon /> : <ThinkingDots />}
+        </span>
+        <span className="figma-caption text-[var(--text-secondary)]">
+          {isScanning ? `Scanning pages ${scanRange}…` : "DocuMind is thinking…"}
+        </span>
       </div>
     </SlideUp>
   );

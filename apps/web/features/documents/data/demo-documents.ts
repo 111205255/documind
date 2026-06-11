@@ -24,6 +24,12 @@ export const DEMO_DOCUMENTS: DocumentListItem[] = [
     id: "hostel-rental",
     title: "Hostel Rental Agreement",
     pageCount: 9,
-    relativeTime: "Today",
+    relativeTime: "Last week",
+  },
+  {
+    id: "startup-pitch",
+    title: "Startup Pitch Deck",
+    pageCount: 24,
+    relativeTime: "Last week",
   },
 ];

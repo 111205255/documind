@@ -4,14 +4,19 @@ import { listDocumentsForUser } from "@/services/documents/list-documents";
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: Promise<{ empty?: string }>;
+  searchParams: Promise<{ empty?: string; demo?: string }>;
 }) {
-  const { empty } = await searchParams;
+  const { empty, demo } = await searchParams;
 
   if (empty !== undefined) {
     return <DocumentsHomeScreen documents={[]} />;
   }
 
   const documents = await listDocumentsForUser();
-  return <DocumentsHomeScreen documents={documents} />;
+  return (
+    <DocumentsHomeScreen
+      documents={documents}
+      useDemoFallback={demo !== undefined}
+    />
+  );
 }

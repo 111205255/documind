@@ -25,7 +25,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 export function SettingsScreen() {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
-  const { email, initials } = useCurrentUser();
+  const { email, displayName, initials } = useCurrentUser();
   const reducedMotion = useReducedMotion();
   const [displayEmail, setDisplayEmail] = useState<string | null>(null);
   const [notifications, setNotifications] = useState(true);
@@ -44,7 +44,6 @@ export function SettingsScreen() {
     router.refresh();
   };
 
-  const displayName = displayEmail?.split("@")[0] ?? "Account";
   const isDark = theme === "dark";
 
   return (
@@ -72,7 +71,7 @@ export function SettingsScreen() {
                 {initials}
               </div>
               <div className="min-w-0">
-                <p className="text-base font-semibold capitalize text-[var(--text-primary)]">
+                <p className="text-base font-semibold text-[var(--text-primary)]">
                   {displayName}
                 </p>
                 <p className="figma-meta truncate">{displayEmail ?? "Not signed in"}</p>

@@ -37,7 +37,7 @@ function NavIcon({ label }: { label: string }) {
 export function AppSidebar() {
   const pathname = usePathname();
   const { openUpload } = useUploadModal();
-  const { email, initials } = useCurrentUser();
+  const { displayName, initials } = useCurrentUser();
   const reducedMotion = useReducedMotion();
 
   return (
@@ -109,8 +109,8 @@ export function AppSidebar() {
           <div className="figma-sidebar-user-inner">
             <div className="figma-sidebar-user-avatar">{initials}</div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold capitalize text-[var(--text-primary)]">
-                {email?.split("@")[0] ?? "Account"}
+              <p className="truncate text-sm font-semibold text-[var(--text-primary)]">
+                {displayName}
               </p>
               <p className="text-xs text-[var(--text-tertiary)]">Free plan</p>
             </div>

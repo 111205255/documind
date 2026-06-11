@@ -11,6 +11,7 @@ import { StaggerItem, StaggerList } from "@/components/motion/stagger-list";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ROUTES } from "@/lib/constants";
 import { formatRelativeTime } from "@/lib/format-relative-time";
+import { DEMO_CHAT_THREADS } from "@/features/chat/data/demo-chat-threads";
 import {
   deleteThread,
   listUserThreads,
@@ -32,15 +33,19 @@ export function ChatHistoryScreen() {
       .finally(() => setLoading(false));
   }, []);
 
+  const showcaseThreads = threads.length > 0 ? threads : DEMO_CHAT_THREADS;
+  const isDemo = threads.length === 0;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return threads;
-    return threads.filter(
+    if (!q) return showcaseThreads;
+    return showcaseThreads.filter(
       (t) => t.title.toLowerCase().includes(q) || t.preview.toLowerCase().includes(q),
     );
-  }, [threads, search]);
+  }, [showcaseThreads, search]);
 
   const onDelete = async (thread: ThreadListItem) => {
+    if (isDemo || thread.id.startsWith("demo-")) return;
     if (!confirm(`Delete chat "${thread.title}"?`)) return;
     setDeletingId(thread.id);
     try {
@@ -57,7 +62,7 @@ export function ChatHistoryScreen() {
     <div className="mx-auto w-full max-w-[var(--dashboard-content-narrow)]" data-testid="chat-history-screen">
       <FadeIn>
         <header className="figma-page-header">
-          <h1 className="figma-page-title">History</h1>
+          <h1 className="figma-page-title">Chats</h1>
           <motion.div
             className="figma-search-field shrink-0"
             animate={
@@ -86,7 +91,7 @@ export function ChatHistoryScreen() {
         <div className="mt-12 flex justify-center">
           <Spinner />
         </div>
-      ) : filtered.length === 0 ? (
+      ) : !loading && filtered.length === 0 ? (
         <FadeIn className="mt-16 flex flex-col items-center px-4 text-center">
           <FloatingIcon>
             <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-[var(--radius-xl)] bg-[var(--doc-empty-icon-bg)] text-[var(--brand-primary)] shadow-[var(--doc-empty-icon-shadow)]">
@@ -119,6 +124,7 @@ export function ChatHistoryScreen() {
                 deleting={deletingId === t.id}
                 onDelete={() => void onDelete(t)}
                 reducedMotion={reducedMotion}
+                demo={isDemo}
               />
             </StaggerItem>
           ))}
@@ -133,11 +139,13 @@ function HistoryRow({
   deleting,
   onDelete,
   reducedMotion,
+  demo = false,
 }: {
   thread: ThreadListItem;
   deleting: boolean;
   onDelete: () => void;
   reducedMotion: boolean;
+  demo?: boolean;
 }) {
   return (
     <motion.div
@@ -158,15 +166,17 @@ function HistoryRow({
           {formatRelativeTime(thread.updatedAt)}
         </span>
       </Link>
-      <button
-        type="button"
-        aria-label={`Delete chat ${thread.title}`}
-        disabled={deleting}
-        onClick={onDelete}
-        className="interaction-press shrink-0 rounded-[var(--radius-md)] p-2 text-[var(--text-tertiary)] opacity-0 transition hover:bg-[var(--surface-sunken)] hover:text-[var(--error)] group-hover:opacity-100 disabled:opacity-50"
-      >
-        <TrashIcon className="h-4 w-4" />
-      </button>
+      {!demo ? (
+        <button
+          type="button"
+          aria-label={`Delete chat ${thread.title}`}
+          disabled={deleting}
+          onClick={onDelete}
+          className="interaction-press shrink-0 rounded-[var(--radius-md)] p-2 text-[var(--text-tertiary)] opacity-0 transition hover:bg-[var(--surface-sunken)] hover:text-[var(--error)] group-hover:opacity-100 disabled:opacity-50"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </button>
+      ) : null}
     </motion.div>
   );
 }
