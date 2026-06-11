@@ -12,6 +12,8 @@
 
 # testing
 /coverage
+/e2e/.audit-creds.json
+/e2e/.shots/
 
 # next.js
 /.next/

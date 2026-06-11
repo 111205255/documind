@@ -1,7 +1,15 @@
+/* Establish cascade-layer order BEFORE any layered imports — otherwise the
+   production bundle orders layers by first appearance and Tailwind's base
+   preflight (margin/padding resets) overrides components + utilities.
+   Turbopack drops `@layer` statement rules when merging CSS chunks, so the
+   order must also be enforced by importing tailwindcss FIRST: its theme/base
+   layers then appear before our components layer in the bundle. */
+@layer theme, base, components, utilities;
+
+@import "tailwindcss";
 @import "../styles/tokens.css";
 @import "../styles/figma-layout.css";
 @import "../styles/animations.css";
-@import "tailwindcss";
 
 @theme inline {
   --color-background: var(--surface-base);
