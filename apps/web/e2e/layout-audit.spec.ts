@@ -125,6 +125,8 @@ test.describe("Layout audit — authenticated @desktop", () => {
   test("settings cards share equal width", async ({ page }) => {
     await page.goto("/settings");
     await expect(page.getByTestId("settings-screen")).toBeVisible({ timeout: 15_000 });
+    // Profile card is intentionally fit-content per Figma frame 13
+    await expect(page.getByTestId("settings-profile-card")).toBeVisible();
     const cards = page.getByTestId("settings-card");
     const count = await cards.count();
     expect(count).toBeGreaterThanOrEqual(3);

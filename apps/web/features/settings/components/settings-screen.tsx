@@ -57,8 +57,8 @@ export function SettingsScreen() {
           <motion.div
             whileHover={reducedMotion ? undefined : { y: -2 }}
             transition={{ type: "spring", damping: 28, stiffness: 400 }}
-            className="figma-surface-card p-5 transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-sm)]"
-            data-testid="settings-card"
+            className="figma-surface-card w-fit max-w-full p-5 pr-8 transition-shadow duration-[var(--duration-normal)] hover:shadow-[var(--shadow-sm)]"
+            data-testid="settings-profile-card"
           >
             <div className="flex items-center gap-4">
               <div

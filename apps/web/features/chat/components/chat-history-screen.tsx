@@ -59,7 +59,7 @@ export function ChatHistoryScreen() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[var(--dashboard-content-narrow)]" data-testid="chat-history-screen">
+    <div className="w-full" data-testid="chat-history-screen">
       <FadeIn>
         <header className="figma-page-header">
           <h1 className="figma-page-title">Chats</h1>
@@ -152,7 +152,7 @@ function HistoryRow({
       role="listitem"
       whileHover={reducedMotion ? undefined : { y: -2 }}
       transition={{ type: "spring", damping: 28, stiffness: 420 }}
-      className="group flex items-center gap-4 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-5 py-4 transition-[border-color,box-shadow] duration-[var(--duration-normal)] hover:border-[var(--border-focus)] hover:shadow-[var(--shadow-sm)]"
+      className="group flex items-center gap-4 rounded-[var(--radius-xl)] border border-[var(--border-default)] bg-[var(--surface-raised)] px-5 py-5 transition-[border-color,box-shadow] duration-[var(--duration-normal)] hover:border-[var(--border-focus)] hover:shadow-[var(--shadow-sm)]"
     >
       <Link href={ROUTES.chatThread(thread.documentId)} className="flex min-w-0 flex-1 items-center gap-3">
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-md)] bg-gradient-to-b from-[var(--brand-gradient-from)] to-[var(--brand-gradient-to)] text-white transition-transform duration-[var(--duration-fast)] group-hover:scale-105">

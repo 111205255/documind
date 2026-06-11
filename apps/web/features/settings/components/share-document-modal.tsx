@@ -50,6 +50,7 @@ export function ShareDocumentModal({
       onClose={onClose}
       title="Share document"
       subtitle="Anyone with the link can view this document."
+      className="max-w-[30rem]"
     >
       <div className="figma-modal-body">
         <div className="flex items-center gap-3 rounded-[var(--radius-lg)] border border-[var(--border-default)] bg-[var(--surface-sunken)] px-4 py-2.5">

@@ -38,7 +38,7 @@
   --doc-page-bg: #ffffff;
   --doc-search-bg: #f3f4f6;
   --doc-search-border: #ebebeb;
-  --doc-search-height: 3rem;
+  --doc-search-height: 2.75rem;
   --doc-card-bg: #ffffff;
   --doc-card-padding: 1.25rem;
   --doc-card-gap: 1.25rem;
@@ -168,13 +168,13 @@
   --sidebar-logo-upload-gap: 24px; /* logo → upload */
   --sidebar-upload-nav-gap: 24px; /* upload → home */
   --sidebar-upload-height: 44px;
-  --sidebar-upload-radius: 12px;
+  --sidebar-upload-radius: 9999px;
   --sidebar-upload-gap: 8px;
-  --sidebar-nav-height: 44px;
+  --sidebar-nav-height: 40px;
   --sidebar-nav-padding-x: 12px;
   --sidebar-nav-icon-gap: 12px;
   --sidebar-nav-radius: 10px;
-  --sidebar-nav-gap: 4px;
+  --sidebar-nav-gap: 8px;
   --sidebar-user-top-gap: 16px;
   --sidebar-user-radius: 12px;
   --sidebar-user-avatar-size: 36px;
@@ -183,7 +183,7 @@
   --sidebar-border: #e5e5ea;
   --sidebar-active-bg: #fff0ee;
   --sidebar-active-text: var(--brand-primary);
-  --sidebar-user-card-padding: 12px;
+  --sidebar-user-card-padding: 8px 12px;
   --dashboard-main-bg: #ffffff;
   --dashboard-main-padding: 2.5rem;
   --dashboard-content-max: 72rem;
@@ -196,7 +196,8 @@
   --panel-border: #ebebeb;
   --viewer-bg: #f5f5f7;
   --chat-panel-bg: #ffffff;
-  --chat-panel-width: 25rem;
+  /* Frame 08: panel ≈ 620px at 1440 design width */
+  --chat-panel-width: min(38.75rem, 44vw);
   --chat-panel-padding: 1.25rem;
   --modal-overlay: rgba(0, 0, 0, 0.45);
 
@@ -264,7 +265,7 @@
   --ring-offset: #000000;
   --logo-shadow: 0 12px 40px var(--brand-glow);
 
-  --sidebar-bg: #111111;
+  --sidebar-bg: #000000;
   --sidebar-border: #1f1f1f;
   --sidebar-active-bg: rgba(255, 77, 77, 0.14);
   --sidebar-active-text: #ff6b6b;

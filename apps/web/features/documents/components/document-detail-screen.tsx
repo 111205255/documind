@@ -72,10 +72,10 @@ export function DocumentDetailScreen({
     typeof window !== "undefined" ? `${window.location.origin}${ROUTES.chatThread(id)}` : undefined;
 
   return (
-    <FadeIn className="figma-content-stack">
+    <FadeIn className="figma-content-stack !max-w-[45rem]">
       <h1 className="figma-page-title">Document details</h1>
 
-      <div className="figma-doc-hero-card">
+      <div className="figma-doc-hero-card w-fit max-w-full pr-10">
         <div className="figma-doc-hero-icon">
           <DocumentIcon className="h-7 w-7" />
         </div>

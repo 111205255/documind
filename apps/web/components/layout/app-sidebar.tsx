@@ -45,7 +45,7 @@ export function AppSidebar() {
       <Link href={ROUTES.home} className="figma-sidebar-brand hover-lift">
         <AppLogo
           size="md"
-          className="!h-8 !w-8 shrink-0 [&_svg]:!h-[18px] [&_svg]:!w-[18px]"
+          className="!h-9 !w-9 shrink-0 [&_svg]:!h-5 [&_svg]:!w-5"
         />
         <span className="text-lg font-bold leading-none tracking-tight text-[var(--text-primary)]">
           {APP_NAME}

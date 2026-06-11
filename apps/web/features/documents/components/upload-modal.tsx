@@ -79,7 +79,7 @@ export function UploadModal() {
   ];
 
   return (
-    <Modal open={open} onClose={onClose} title="Add a document">
+    <Modal open={open} onClose={onClose} title="Add a document" className="max-w-[30rem]">
       <input
         ref={fileRef}
         type="file"

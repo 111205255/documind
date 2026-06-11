@@ -9,7 +9,7 @@ import { ROUTES } from "@/lib/constants";
 /** Figma frame 03 — empty home, centered in main canvas */
 export function DocumentsEmptyState({ onUpload }: { onUpload?: () => void }) {
   const uploadBtn = (
-    <span className="figma-primary-btn mt-10">
+    <span className="figma-primary-btn mt-10 !rounded-full">
       <PlusIcon />
       Upload your first document
     </span>
