@@ -37,7 +37,7 @@ const STARTER_QUESTIONS = [
   "What are the main conclusions?",
 ];
 
-const PANEL_STARTERS = ["Carry forward?", "Maternity leave?", "Notice period?"];
+const PANEL_STARTERS = ["Summarize this", "Key points?", "Main takeaways?"];
 
 export function ActiveChatScreen({
   documentId,
@@ -139,20 +139,11 @@ export function ActiveChatScreen({
       await saveMessage(threadId, "user", trimmed);
       await saveMessage(threadId, "assistant", answer, citations);
     } catch (e) {
+      // Keep the user's question visible and surface the failure once via the
+      // styled inline error below — avoid also injecting a fake assistant
+      // bubble that reads as if the AI replied with the error text.
       const msg = e instanceof Error ? e.message : "Could not get an answer.";
       setError(msg);
-      setMessages((prev) => prev.filter((m) => m.id !== userMsg.id));
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          threadId,
-          role: "assistant",
-          content: msg,
-          createdAt: new Date().toISOString(),
-          status: "error",
-        },
-      ]);
     } finally {
       setThinking(false);
     }

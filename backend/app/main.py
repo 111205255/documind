@@ -9,20 +9,22 @@ from app.limiter import limiter
 
 
 def validate_auth_config(settings: Settings) -> None:
-    has_jwt = bool(settings.supabase_jwt_secret.strip())
-    has_sb = bool(settings.supabase_url.strip()) and bool(
-        settings.supabase_service_role_key.strip()
-    )
+    url_set = bool(settings.supabase_url.strip())
+    srk_set = bool(settings.supabase_service_role_key.strip())
+    has_sb = url_set and srk_set
     has_api_key = bool(settings.rag_api_key.strip())
 
-    if has_jwt != has_sb:
+    # Tokens are verified via the project JWKS (asymmetric keys), so the legacy
+    # SUPABASE_JWT_SECRET is optional. URL + service role key are required
+    # together for token verification and document-ownership checks.
+    if url_set != srk_set:
         raise RuntimeError(
-            "SUPABASE_JWT_SECRET, SUPABASE_URL, and SUPABASE_SERVICE_ROLE_KEY must all be set together."
+            "SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set together."
         )
 
-    if settings.require_auth and not has_api_key and not has_jwt:
+    if settings.require_auth and not has_api_key and not has_sb:
         raise RuntimeError(
-            "Set RAG_API_KEY or full Supabase auth before serving production traffic."
+            "Set RAG_API_KEY or Supabase auth (URL + service role key) before serving production traffic."
         )
 
 

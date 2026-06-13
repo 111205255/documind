@@ -33,12 +33,20 @@ def _supabase_issuer(settings: Settings) -> str | None:
     return f"{base}/auth/v1" if base else None
 
 
+def _supabase_jwks_url(settings: Settings) -> str | None:
+    base = settings.supabase_url.strip().rstrip("/")
+    return f"{base}/auth/v1/.well-known/jwks.json" if base else None
+
+
 def get_user_id_from_token(
     settings: Settings,
     authorization: str | None = Header(default=None),
 ) -> str | None:
     secret = settings.supabase_jwt_secret.strip()
-    if not secret:
+    jwks_url = _supabase_jwks_url(settings)
+    # Asymmetric (ES256/RS256) tokens are verified via JWKS, so a configured
+    # Supabase URL is sufficient even without the legacy HS256 secret.
+    if not secret and not jwks_url:
         if settings.require_auth:
             raise HTTPException(status_code=503, detail="Supabase auth is not configured.")
         return None
@@ -47,7 +55,12 @@ def get_user_id_from_token(
         raise HTTPException(status_code=401, detail="Sign in required.")
 
     token = authorization.removeprefix("Bearer ").strip()
-    return decode_supabase_jwt(token, secret, issuer=_supabase_issuer(settings))
+    return decode_supabase_jwt(
+        token,
+        secret,
+        issuer=_supabase_issuer(settings),
+        jwks_url=jwks_url,
+    )
 
 
 def require_document_access(
@@ -58,13 +71,6 @@ def require_document_access(
     has_supabase = bool(settings.supabase_url.strip()) and bool(
         settings.supabase_service_role_key.strip()
     )
-    has_jwt = bool(settings.supabase_jwt_secret.strip())
-
-    if has_supabase != has_jwt:
-        raise HTTPException(
-            status_code=503,
-            detail="Supabase auth is misconfigured. Set URL, service role key, and JWT secret together.",
-        )
 
     if not has_supabase:
         if settings.require_auth:

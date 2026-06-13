@@ -21,10 +21,14 @@ def health(settings: Settings = Depends(settings_dep)) -> dict:
     except Exception:
         chroma_ok = False
 
+    has_supabase = bool(settings.supabase_url.strip()) and bool(
+        settings.supabase_service_role_key.strip()
+    )
+
     auth_mode = "open"
     if settings.rag_api_key.strip():
         auth_mode = "api_key"
-    if settings.supabase_jwt_secret.strip() and settings.supabase_service_role_key.strip():
+    if has_supabase:
         auth_mode = "supabase_jwt"
 
     status = "ok" if gemini_ok and chroma_ok else "degraded"
@@ -38,7 +42,7 @@ def health(settings: Settings = Depends(settings_dep)) -> dict:
         "chroma_ready": chroma_ok,
         "chroma_chunk_count": chroma_chunks,
         "auth_mode": auth_mode,
-        "supabase_auth_enabled": bool(settings.supabase_jwt_secret.strip()),
+        "supabase_auth_enabled": has_supabase,
     }
 
 

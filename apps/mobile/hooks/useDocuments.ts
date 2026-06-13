@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { DEMO_DOCUMENTS, type DocumentListItem } from "../data/demo-documents";
+import { type DocumentListItem } from "../data/demo-documents";
 import { isSupabaseConfigured } from "../lib/env";
 import { listDocuments } from "../lib/supabase/documents";
 import { useAuth } from "../context/AuthContext";
@@ -17,13 +17,7 @@ export function useDocuments(forceEmpty?: boolean) {
       return;
     }
 
-    if (!isSupabaseConfigured()) {
-      setDocuments(DEMO_DOCUMENTS);
-      setLoading(false);
-      return;
-    }
-
-    if (!user) {
+    if (!isSupabaseConfigured() || !user) {
       setDocuments([]);
       setLoading(false);
       return;

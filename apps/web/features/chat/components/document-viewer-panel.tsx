@@ -79,7 +79,7 @@ export function DocumentViewerPanel({
               Page {displayPage} of {pageTotal}
             </>
           ) : (
-            <>Page {displayPage} of 64</>
+            <>Page {displayPage}</>
           )}
         </p>
       </header>

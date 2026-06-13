@@ -11,7 +11,6 @@ import { StaggerItem, StaggerList } from "@/components/motion/stagger-list";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { ROUTES } from "@/lib/constants";
 import { formatRelativeTime } from "@/lib/format-relative-time";
-import { DEMO_CHAT_THREADS } from "@/features/chat/data/demo-chat-threads";
 import {
   deleteThread,
   listUserThreads,
@@ -33,19 +32,15 @@ export function ChatHistoryScreen() {
       .finally(() => setLoading(false));
   }, []);
 
-  const showcaseThreads = threads.length > 0 ? threads : DEMO_CHAT_THREADS;
-  const isDemo = threads.length === 0;
-
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return showcaseThreads;
-    return showcaseThreads.filter(
+    if (!q) return threads;
+    return threads.filter(
       (t) => t.title.toLowerCase().includes(q) || t.preview.toLowerCase().includes(q),
     );
-  }, [showcaseThreads, search]);
+  }, [threads, search]);
 
   const onDelete = async (thread: ThreadListItem) => {
-    if (isDemo || thread.id.startsWith("demo-")) return;
     if (!confirm(`Delete chat "${thread.title}"?`)) return;
     setDeletingId(thread.id);
     try {
@@ -124,7 +119,6 @@ export function ChatHistoryScreen() {
                 deleting={deletingId === t.id}
                 onDelete={() => void onDelete(t)}
                 reducedMotion={reducedMotion}
-                demo={isDemo}
               />
             </StaggerItem>
           ))}
@@ -139,13 +133,11 @@ function HistoryRow({
   deleting,
   onDelete,
   reducedMotion,
-  demo = false,
 }: {
   thread: ThreadListItem;
   deleting: boolean;
   onDelete: () => void;
   reducedMotion: boolean;
-  demo?: boolean;
 }) {
   return (
     <motion.div
@@ -166,17 +158,15 @@ function HistoryRow({
           {formatRelativeTime(thread.updatedAt)}
         </span>
       </Link>
-      {!demo ? (
-        <button
-          type="button"
-          aria-label={`Delete chat ${thread.title}`}
-          disabled={deleting}
-          onClick={onDelete}
-          className="interaction-press shrink-0 rounded-[var(--radius-md)] p-2 text-[var(--text-tertiary)] opacity-0 transition hover:bg-[var(--surface-sunken)] hover:text-[var(--error)] group-hover:opacity-100 disabled:opacity-50"
-        >
-          <TrashIcon className="h-4 w-4" />
-        </button>
-      ) : null}
+      <button
+        type="button"
+        aria-label={`Delete chat ${thread.title}`}
+        disabled={deleting}
+        onClick={onDelete}
+        className="interaction-press shrink-0 rounded-[var(--radius-md)] p-2 text-[var(--text-tertiary)] opacity-0 transition hover:bg-[var(--surface-sunken)] hover:text-[var(--error)] group-hover:opacity-100 disabled:opacity-50"
+      >
+        <TrashIcon className="h-4 w-4" />
+      </button>
     </motion.div>
   );
 }

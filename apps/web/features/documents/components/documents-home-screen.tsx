@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { DEMO_DOCUMENTS } from "@/features/documents/data/demo-documents";
 import type { DocumentListItem } from "@/types/document";
 import { DocumentSearchBar } from "./document-search-bar";
 import { DocumentGridCard } from "./document-grid-card";
@@ -12,7 +11,6 @@ import { FadeIn } from "@/components/motion/fade-in";
 
 export interface DocumentsHomeScreenProps {
   documents?: DocumentListItem[];
-  useDemoFallback?: boolean;
 }
 
 function filterDocuments(items: DocumentListItem[], query: string) {
@@ -22,11 +20,8 @@ function filterDocuments(items: DocumentListItem[], query: string) {
 }
 
 /** Figma frames 03 (empty) & 04 (library) */
-export function DocumentsHomeScreen({
-  documents,
-  useDemoFallback = false,
-}: DocumentsHomeScreenProps) {
-  const items = documents ?? (useDemoFallback ? DEMO_DOCUMENTS : []);
+export function DocumentsHomeScreen({ documents }: DocumentsHomeScreenProps) {
+  const items = documents ?? [];
   const [search, setSearch] = useState("");
   const { openUpload } = useUploadModal();
   const isEmpty = items.length === 0;
