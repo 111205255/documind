@@ -32,10 +32,10 @@ export function DocumentGridCard({
             e.stopPropagation();
             onDelete(document);
           }}
-          className="interaction-press absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--error)]/10 hover:text-[var(--error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--error)]/40 disabled:opacity-50"
+          className="interaction-press absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-[var(--error)]/10 text-[var(--error)] shadow-sm transition-all duration-[var(--duration-fast)] hover:bg-[var(--error)] hover:text-white hover:shadow-md active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--error)]/40 disabled:opacity-50"
           data-testid="document-card-delete"
         >
-          <TrashIcon className="h-4 w-4" />
+          <TrashIcon className="h-[18px] w-[18px]" />
         </button>
       ) : null}
       <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-[var(--radius-lg)] bg-gradient-to-b from-[var(--brand-gradient-from)] to-[var(--brand-gradient-to)] text-white transition-transform duration-[var(--duration-fast)] group-hover:scale-105">

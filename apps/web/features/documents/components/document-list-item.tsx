@@ -52,10 +52,10 @@ export function DocumentListItemCard({
             e.stopPropagation();
             onDelete(document);
           }}
-          className="interaction-press flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--error)]/10 hover:text-[var(--error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--error)]/40 disabled:opacity-50"
+          className="interaction-press flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--error)]/10 text-[var(--error)] transition-all duration-[var(--duration-fast)] hover:bg-[var(--error)] hover:text-white active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--error)]/40 disabled:opacity-50"
           data-testid="document-card-delete"
         >
-          <TrashIcon className="h-4 w-4" />
+          <TrashIcon className="h-[18px] w-[18px]" />
         </button>
       ) : (
         <ChevronRightIcon className="shrink-0 text-[var(--doc-chevron)] transition-transform group-hover:translate-x-0.5" />
