@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends
 
 from app.api.deps import require_gemini, settings_dep
 from app.config import Settings
+from app.services.rag.ingest import PDF_INGEST_VERSION
 from app.services.vector_store import get_vector_store
 
 router = APIRouter()
@@ -43,6 +44,7 @@ def health(settings: Settings = Depends(settings_dep)) -> dict:
         "chroma_chunk_count": chroma_chunks,
         "auth_mode": auth_mode,
         "supabase_auth_enabled": has_supabase,
+        "pdf_ingest": PDF_INGEST_VERSION,
     }
 
 

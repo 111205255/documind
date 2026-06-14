@@ -19,6 +19,20 @@
 
 If you set `RAG_API_KEY` on Render, also add it on Vercel as `RAG_API_KEY` (web proxy uses it).
 
+### After pushing backend changes
+
+Render does **not** auto-deploy unless GitHub is connected in the Render dashboard. Either:
+
+1. **Manual (once):** [Render dashboard](https://dashboard.render.com) → **documind-api** → **Manual Deploy** → **Deploy latest commit**
+2. **Automatic (recommended):** Copy the **Deploy Hook** URL from the service Settings tab, then add it as GitHub repo secret `RENDER_DEPLOY_HOOK_URL`. The workflow in `.github/workflows/render-deploy.yml` triggers deploys on every push to `master` that touches `backend/`.
+
+Verify the new backend is live:
+
+```powershell
+curl https://documind-api-drsq.onrender.com/api/v1/health
+# Look for: "pdf_ingest": "pymupdf-gemini-v1"
+```
+
 ## Chroma persistence on Render
 
 Free Render instances use **ephemeral disk** — indexed documents are lost on redeploy/restart. Users must re-upload after a deploy.

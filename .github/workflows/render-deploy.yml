@@ -1,0 +1,24 @@
+name: Deploy Render API
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "backend/**"
+      - "render.yaml"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$DEPLOY_HOOK" ]; then
+            echo "RENDER_DEPLOY_HOOK_URL is not set — skip automatic Render deploy."
+            echo "Redeploy manually: Render dashboard → documind-api → Manual Deploy → Deploy latest commit."
+            exit 0
+          fi
+          curl -fsS -X POST "$DEPLOY_HOOK"
+          echo "Render deploy triggered."

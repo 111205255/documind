@@ -14,14 +14,10 @@ langchain-community>=0.3.0,<0.4
 langchain-text-splitters>=0.3.0,<0.4
 chromadb>=1.0.0,<2.0
 # PyMuPDF extracts text from PDFs that pypdf misses (vector/outlined text from
-# Figma/Canva exports) and renders pages to images for the OCR fallback.
+# Figma/Canva exports) and renders pages for Gemini vision OCR fallback.
 pymupdf>=1.24.0,<2.0
 pypdf>=5.0.0,<6.0
 python-docx>=1.1.0,<2.0
-# OCR fallback for image-only / scanned PDFs. Requires the `tesseract-ocr`
-# system package (installed in the Dockerfile).
-pytesseract>=0.3.10,<0.4
-pillow>=10.0.0,<12.0
 
 # HTTP + Supabase JWT verification / document ownership checks
 httpx>=0.27.0,<1.0

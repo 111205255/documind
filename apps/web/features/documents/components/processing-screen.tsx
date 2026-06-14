@@ -21,16 +21,21 @@ export function ProcessingScreen({ documentId }: { documentId: string }) {
   const [pageCount, setPageCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [progress, setProgress] = useState(12);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (started.current) return;
-    started.current = true;
+    started.current = false;
 
     const tick = setInterval(() => {
       setProgress((p) => Math.min(p + 3, 92));
     }, 450);
 
     const run = async () => {
+      if (started.current) return;
+      started.current = true;
+      setError(null);
+      setProgress(12);
+
       try {
         const doc = await getDocumentById(documentId);
         if (!doc) {
@@ -67,13 +72,13 @@ export function ProcessingScreen({ documentId }: { documentId: string }) {
 
     void run();
     return () => clearInterval(tick);
-  }, [documentId, router]);
+  }, [documentId, router, attempt]);
 
   if (error) {
     return (
       <ErrorState
         message={error}
-        onRetry={() => router.push(ROUTES.chatThread(documentId))}
+        onRetry={() => setAttempt((n) => n + 1)}
       />
     );
   }

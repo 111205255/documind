@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { GradientBackground } from "../../../components/GradientBackground";
 import { useTheme } from "../../../theme/ThemeContext";
-import { FadeIn, FloatingIcon, SuccessPulse } from "../../../components/motion";
+import { FadeIn, FloatingIcon, PressableScale, SuccessPulse } from "../../../components/motion";
 import { hapticSuccess } from "../../../lib/haptics";
 import { isApiConfigured } from "../../../lib/env";
 import {
@@ -24,12 +24,18 @@ export default function ProcessingScreen() {
   const [docTitle, setDocTitle] = useState(title ?? "Your document");
   const [error, setError] = useState<string | null>(null);
   const [complete, setComplete] = useState(false);
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
-    if (started.current || !id) return;
-    started.current = true;
+    if (!id) return;
+    started.current = false;
 
     const run = async () => {
+      if (started.current) return;
+      started.current = true;
+      setError(null);
+      setComplete(false);
+
       try {
         const { data: doc, error: docError } = await supabase
           .from("documents")
@@ -70,7 +76,7 @@ export default function ProcessingScreen() {
     };
 
     void run();
-  }, [id, router]);
+  }, [id, attempt, router]);
 
   if (error) {
     return (
@@ -79,6 +85,12 @@ export default function ProcessingScreen() {
           <View style={styles.center}>
             <Text style={[styles.title, { color: colors.textPrimary }]}>Indexing failed</Text>
             <Text style={[styles.sub, { color: colors.error }]}>{error}</Text>
+            <PressableScale
+              onPress={() => setAttempt((n) => n + 1)}
+              style={[styles.retryBtn, { backgroundColor: colors.brandPrimary }]}
+            >
+              <Text style={styles.retryLabel}>Try again</Text>
+            </PressableScale>
           </View>
         </SafeAreaView>
       </GradientBackground>
@@ -128,5 +140,12 @@ const styles = StyleSheet.create({
     marginBottom: 28,
   },
   title: { fontSize: 22, fontWeight: "700", textAlign: "center" },
-  sub: { marginTop: 8, fontSize: 15, textAlign: "center" },
+  sub: { marginTop: 8, fontSize: 15, textAlign: "center", paddingHorizontal: 8 },
+  retryBtn: {
+    marginTop: 24,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 999,
+  },
+  retryLabel: { color: "#fff", fontSize: 16, fontWeight: "600" },
 });

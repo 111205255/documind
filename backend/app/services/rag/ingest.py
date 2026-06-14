@@ -1,10 +1,12 @@
+import base64
 import io
 import logging
-from shutil import which
 from typing import Any
 
-import fitz  # PyMuPDF — robust text extraction + page rendering for OCR.
+import fitz  # PyMuPDF — robust text extraction + page rendering for vision OCR.
 from langchain_core.documents import Document
+from langchain_core.messages import HumanMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from docx import Document as DocxDocument
 
@@ -13,13 +15,13 @@ from app.services.vector_store import add_chunks, delete_document_chunks, get_ve
 
 logger = logging.getLogger(__name__)
 
-# A page with fewer than this many characters is treated as "no real text"
-# and routed to the OCR fallback (covers image-only / vector-outlined PDFs
-# such as design resumes exported from Figma/Canva and scanned documents).
+PDF_INGEST_VERSION = "pymupdf-gemini-v1"
+
+# Pages with fewer characters than this are treated as image-only and sent to Gemini vision.
 _MIN_PAGE_TEXT_CHARS = 12
-# Cap OCR work so a huge scanned file cannot exhaust the free-tier instance.
-_MAX_OCR_PAGES = 40
-_OCR_DPI = 200
+# Cap vision OCR so large scanned files cannot exhaust the free-tier instance.
+_MAX_VISION_PAGES = 20
+_VISION_DPI = 150
 
 
 def _split_documents(
@@ -34,28 +36,40 @@ def _split_documents(
     return splitter.split_documents(documents)
 
 
-def _ocr_available() -> bool:
-    """True only when both pytesseract and the tesseract binary are present."""
-    try:
-        import pytesseract  # noqa: F401
-    except Exception:
-        return False
-    return which("tesseract") is not None
+def _gemini_ocr_page(settings: Settings, page: fitz.Page) -> str:
+    """Extract text from an image-only PDF page via Gemini vision."""
+    if not settings.google_api_key.strip():
+        return ""
+
+    pix = page.get_pixmap(dpi=_VISION_DPI)
+    b64 = base64.standard_b64encode(pix.tobytes("png")).decode("ascii")
+
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=settings.google_api_key,
+        model=settings.gemini_model,
+        temperature=0,
+    )
+    message = HumanMessage(
+        content=[
+            {
+                "type": "text",
+                "text": (
+                    "Extract every word of visible text from this document page. "
+                    "Return plain text only, preserving useful line breaks. "
+                    "If there is no readable text, return an empty string."
+                ),
+            },
+            {"type": "image_url", "image_url": f"data:image/png;base64,{b64}"},
+        ]
+    )
+    result = llm.invoke([message])
+    return (result.content if hasattr(result, "content") else str(result)).strip()
 
 
-def _ocr_page(page: "fitz.Page") -> str:
-    import pytesseract
-    from PIL import Image
-
-    pix = page.get_pixmap(dpi=_OCR_DPI)
-    img = Image.open(io.BytesIO(pix.tobytes("png")))
-    return (pytesseract.image_to_string(img) or "").strip()
-
-
-def _pdf_to_documents(data: bytes) -> list[Document]:
-    """Extract text with PyMuPDF, falling back to OCR for image-only pages."""
+def _pdf_to_documents(data: bytes, settings: Settings) -> list[Document]:
+    """Extract text with PyMuPDF; image-only pages fall back to Gemini vision OCR."""
     docs: list[Document] = []
-    ocr_pages: list[int] = []
+    vision_pages: list[int] = []
 
     with fitz.open(stream=data, filetype="pdf") as pdf:
         for page_num in range(1, pdf.page_count + 1):
@@ -64,21 +78,21 @@ def _pdf_to_documents(data: bytes) -> list[Document]:
             if len(text) >= _MIN_PAGE_TEXT_CHARS:
                 docs.append(Document(page_content=text, metadata={"page": page_num}))
             else:
-                ocr_pages.append(page_num)
+                vision_pages.append(page_num)
 
-        if ocr_pages and _ocr_available():
-            for page_num in ocr_pages[:_MAX_OCR_PAGES]:
+        if vision_pages and settings.google_api_key.strip():
+            for page_num in vision_pages[:_MAX_VISION_PAGES]:
                 try:
-                    ocr_text = _ocr_page(pdf[page_num - 1])
+                    ocr_text = _gemini_ocr_page(settings, pdf[page_num - 1])
                 except Exception:
-                    logger.exception("OCR failed for page %s", page_num)
+                    logger.exception("Gemini vision OCR failed for page %s", page_num)
                     continue
                 if len(ocr_text) >= _MIN_PAGE_TEXT_CHARS:
                     docs.append(Document(page_content=ocr_text, metadata={"page": page_num}))
-        elif ocr_pages:
+        elif vision_pages:
             logger.warning(
-                "%d page(s) had no extractable text and OCR is unavailable.",
-                len(ocr_pages),
+                "%d page(s) had no extractable text and Gemini is not configured.",
+                len(vision_pages),
             )
 
     docs.sort(key=lambda d: int(d.metadata.get("page", 0)))
@@ -124,7 +138,7 @@ def ingest_pdf_bytes(
     title: str | None = None,
 ) -> dict[str, Any]:
     """Blueprint Step 4: chunk PDF → embed → ChromaDB."""
-    raw_docs = _pdf_to_documents(data)
+    raw_docs = _pdf_to_documents(data, settings)
     if not raw_docs:
         raise ValueError(
             "We couldn't read any text from this PDF. It may be an image-only or "
