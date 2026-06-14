@@ -28,3 +28,21 @@ class ChatResponse(BaseModel):
     answer: str
     citations: list[CitationOut]
     follow_up_questions: list[str] = Field(default_factory=list)
+
+
+class GeneralChatMessage(BaseModel):
+    """A prior turn in a document-less conversation."""
+
+    role: str = Field(..., max_length=20)
+    content: str = Field(..., min_length=1, max_length=8000)
+
+
+class GeneralChatRequest(BaseModel):
+    question: str = Field(..., min_length=1, max_length=4000)
+    # Recent turns for context; capped to keep prompts small and bounded.
+    history: list[GeneralChatMessage] = Field(default_factory=list, max_length=20)
+
+
+class GeneralChatResponse(BaseModel):
+    answer: str
+    follow_up_questions: list[str] = Field(default_factory=list)

@@ -18,7 +18,12 @@ import { DocumentCard } from "../components/DocumentCard";
 import type { DocumentListItem } from "../data/demo-documents";
 import { navigate } from "../lib/nav";
 import { isSupabaseConfigured } from "../lib/env";
-import { pickAndUploadPdf, pickAndUploadWord, uploadUrlDocument } from "../lib/supabase/documents";
+import {
+  deleteDocument,
+  pickAndUploadPdf,
+  pickAndUploadWord,
+  uploadUrlDocument,
+} from "../lib/supabase/documents";
 import { UrlPasteSheet } from "../components/sheets/UrlPasteSheet";
 import { useDocuments } from "../hooks/useDocuments";
 import { useTheme } from "../theme/ThemeContext";
@@ -34,6 +39,7 @@ export default function HomeScreen() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [urlSheetOpen, setUrlSheetOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const { documents, loading, refresh } = useDocuments(empty !== undefined);
 
@@ -131,6 +137,26 @@ export default function HomeScreen() {
     } as never);
   };
 
+  const confirmDelete = (item: DocumentListItem) => {
+    if (deletingId) return;
+    Alert.alert("Delete document", `Delete "${item.title}"? This cannot be undone.`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        style: "destructive",
+        onPress: () => {
+          setDeletingId(item.id);
+          void deleteDocument(item.id)
+            .then(refresh)
+            .catch((e) =>
+              Alert.alert("Delete failed", e instanceof Error ? e.message : "Could not delete."),
+            )
+            .finally(() => setDeletingId(null));
+        },
+      },
+    ]);
+  };
+
   const renderItem: ListRenderItem<DocumentListItem> = ({ item, index }) => (
     <DocumentCard
       title={item.title}
@@ -138,6 +164,8 @@ export default function HomeScreen() {
       index={index}
       onPress={() => openDocument(item)}
       onLongPress={() => openDocumentDetails(item)}
+      onDelete={() => confirmDelete(item)}
+      deleting={deletingId === item.id}
     />
   );
 

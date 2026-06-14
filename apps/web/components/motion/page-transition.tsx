@@ -39,7 +39,9 @@ export function AnimatedPageShell({ children }: { children: ReactNode }) {
   // The active-chat split view fills the full-bleed canvas, so its transition
   // wrapper must participate in the flex height chain — otherwise `h-full`/
   // `flex-1` collapse to content height, leaving a large empty area.
-  const isFullBleed = pathname.startsWith("/chat/") && pathname !== ROUTES.chatHistory;
+  const isFullBleed =
+    pathname === ROUTES.chat ||
+    (pathname.startsWith("/chat/") && pathname !== ROUTES.chatHistory);
 
   return (
     <AnimatePresence mode="wait" initial={false}>

@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../theme/ThemeContext";
 import { docCardShadow } from "../theme/shadows";
 import { PressableScale, StaggerIn } from "./motion";
+import { hapticMedium } from "../lib/haptics";
 
 export function DocumentCard({
   title,
@@ -12,6 +13,8 @@ export function DocumentCard({
   index = 0,
   onPress,
   onLongPress,
+  onDelete,
+  deleting = false,
   showChevron = true,
   alignTop = false,
 }: {
@@ -21,6 +24,8 @@ export function DocumentCard({
   index?: number;
   onPress: () => void;
   onLongPress?: () => void;
+  onDelete?: () => void;
+  deleting?: boolean;
   showChevron?: boolean;
   alignTop?: boolean;
 }) {
@@ -52,7 +57,25 @@ export function DocumentCard({
           </Text>
           <Text style={[styles.cardMeta, { color: colors.textSecondary }]}>{subtitle}</Text>
         </View>
-        {trailing ? (
+        {onDelete ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={`Delete ${title}`}
+            disabled={deleting}
+            onPress={() => {
+              void hapticMedium();
+              onDelete();
+            }}
+            hitSlop={10}
+            style={[styles.deleteBtn, { opacity: deleting ? 0.4 : 1 }]}
+          >
+            <MaterialCommunityIcons
+              name="trash-can-outline"
+              size={20}
+              color={colors.destructive}
+            />
+          </Pressable>
+        ) : trailing ? (
           <Text style={[styles.time, { color: colors.textTertiary }]}>{trailing}</Text>
         ) : showChevron ? (
           <Ionicons name="chevron-forward" size={20} color={colors.docChevron} />
@@ -84,4 +107,11 @@ const styles = StyleSheet.create({
   cardTitle: { fontSize: 16, fontWeight: "600" },
   cardMeta: { marginTop: 4, fontSize: 14 },
   time: { fontSize: 12, paddingTop: 4 },
+  deleteBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });

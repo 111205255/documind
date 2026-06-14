@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRightIcon, DocumentIcon } from "@/components/brand/icons";
+import { ChevronRightIcon, DocumentIcon, TrashIcon } from "@/components/brand/icons";
 import { ROUTES } from "@/lib/constants";
 import type { DocumentListItem } from "@/types/document";
 import { cn } from "@/lib/utils";
@@ -9,9 +9,13 @@ import { cn } from "@/lib/utils";
 export function DocumentListItemCard({
   document,
   className,
+  onDelete,
+  deleting,
 }: {
   document: DocumentListItem;
   className?: string;
+  onDelete?: (doc: DocumentListItem) => void;
+  deleting?: boolean;
 }) {
   const meta = `${document.pageCount} pages · ${document.relativeTime}`;
 
@@ -38,7 +42,24 @@ export function DocumentListItemCard({
         <p className="mt-0.5 truncate text-sm text-[var(--text-secondary)]">{meta}</p>
       </div>
 
-      <ChevronRightIcon className="shrink-0 text-[var(--doc-chevron)] transition-transform group-hover:translate-x-0.5" />
+      {onDelete ? (
+        <button
+          type="button"
+          aria-label={`Delete ${document.title}`}
+          disabled={deleting}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onDelete(document);
+          }}
+          className="interaction-press flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[var(--text-tertiary)] transition-colors hover:bg-[var(--error)]/10 hover:text-[var(--error)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--error)]/40 disabled:opacity-50"
+          data-testid="document-card-delete"
+        >
+          <TrashIcon className="h-4 w-4" />
+        </button>
+      ) : (
+        <ChevronRightIcon className="shrink-0 text-[var(--doc-chevron)] transition-transform group-hover:translate-x-0.5" />
+      )}
     </Link>
   );
 }

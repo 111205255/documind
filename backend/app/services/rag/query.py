@@ -2,6 +2,7 @@ import re
 import uuid
 
 from langchain_core.documents import Document
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_google_genai import ChatGoogleGenerativeAI
 
@@ -124,5 +125,56 @@ def answer_question(
     return {
         "answer": answer.strip(),
         "citations": citations,
+        "follow_up_questions": follow_ups,
+    }
+
+
+GENERAL_SYSTEM_PROMPT = """You are DocuMind, a helpful, friendly AI assistant.
+
+Rules:
+- Answer clearly and concisely in plain language; use simple markdown when it helps.
+- Be honest when you are unsure instead of inventing facts.
+- You are a general assistant here (no document is attached), so do not fabricate citations or page numbers."""
+
+
+def answer_general(
+    settings: Settings,
+    question: str,
+    history: list[dict] | None = None,
+) -> dict:
+    """Document-less Gemini chat with optional short conversation history."""
+    llm = ChatGoogleGenerativeAI(
+        google_api_key=settings.google_api_key,
+        model=settings.gemini_model,
+        temperature=0.4,
+    )
+
+    messages: list = [SystemMessage(content=GENERAL_SYSTEM_PROMPT)]
+    # Keep only the last few turns so the prompt stays bounded.
+    for turn in (history or [])[-10:]:
+        content = (turn.get("content") or "").strip()
+        if not content:
+            continue
+        if turn.get("role") == "assistant":
+            messages.append(AIMessage(content=content))
+        else:
+            messages.append(HumanMessage(content=content))
+
+    messages.append(
+        HumanMessage(
+            content=(
+                f"{question}\n\n"
+                "After your answer, add a new line exactly like this:\n"
+                "FOLLOWUPS: short question 1 | short question 2 | short question 3"
+            )
+        )
+    )
+
+    result = llm.invoke(messages)
+    raw_answer = result.content if hasattr(result, "content") else str(result)
+    answer, follow_ups = _split_answer_and_followups(raw_answer)
+
+    return {
+        "answer": answer.strip(),
         "follow_up_questions": follow_ups,
     }

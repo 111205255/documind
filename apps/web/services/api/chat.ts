@@ -54,3 +54,37 @@ export async function askDocument(
     followUpQuestions: data.follow_up_questions ?? [],
   };
 }
+
+export type GeneralChatTurn = { role: "user" | "assistant"; content: string };
+
+type GeneralChatApiResponse = {
+  answer: string;
+  follow_up_questions?: string[];
+};
+
+export async function askGeneralChat(
+  question: string,
+  history: GeneralChatTurn[] = [],
+): Promise<{ answer: string; followUpQuestions: string[] }> {
+  const apiUrl = getApiUrl();
+  if (!apiUrl) {
+    throw new Error("AI backend is not configured (NEXT_PUBLIC_API_URL).");
+  }
+
+  const response = await fetch(`${apiUrl}/chat/general`, {
+    method: "POST",
+    headers: await getRagHeaders({ "Content-Type": "application/json" }),
+    body: JSON.stringify({ question, history }),
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(formatApiError(detail) || `Chat failed (${response.status})`);
+  }
+
+  const data = (await response.json()) as GeneralChatApiResponse;
+  return {
+    answer: data.answer,
+    followUpQuestions: data.follow_up_questions ?? [],
+  };
+}

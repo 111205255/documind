@@ -1,5 +1,5 @@
-import { ChatEmptyScreen } from "@/features/chat/components/chat-empty-screen";
+import { GeneralChatScreen } from "@/features/chat/components/general-chat-screen";
 
 export default function ChatPage() {
-  return <ChatEmptyScreen />;
+  return <GeneralChatScreen />;
 }
