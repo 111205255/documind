@@ -64,10 +64,11 @@ async def ingest_document(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> IngestResponse:
     """Index a PDF or Word (.docx) file for RAG."""
     document_id = parse_document_id(document_id)
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_gemini(settings)
     require_document_access(settings, document_id, user_id)
 
@@ -126,10 +127,11 @@ async def ingest_document_url(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> IngestResponse:
     """Fetch a public URL and index its text for RAG."""
     document_id = parse_document_id(document_id)
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_gemini(settings)
     require_document_access(settings, document_id, user_id)
 
@@ -162,10 +164,11 @@ def ingest_document_text(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> IngestResponse:
     """Index plain text (dev/tests or pre-extracted content)."""
     document_id = parse_document_id(document_id)
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_gemini(settings)
     require_document_access(settings, document_id, user_id)
 
@@ -188,10 +191,11 @@ def delete_document_index(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> dict:
     """Remove all vector chunks for a document."""
     document_id = parse_document_id(document_id)
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_document_access(settings, document_id, user_id)
 
     store = get_vector_store(settings)

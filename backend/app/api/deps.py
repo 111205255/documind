@@ -10,12 +10,22 @@ from app.services.supabase_access import assert_document_owner
 def verify_api_key(
     settings: Settings,
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> None:
     expected = settings.rag_api_key.strip()
     if not expected:
         if settings.require_auth:
             raise HTTPException(status_code=503, detail="API key is not configured.")
         return
+
+    # Browser/mobile clients authenticate with Supabase JWT (validated in user_dep).
+    # Only require the shared API key for unauthenticated or server-to-server calls.
+    has_supabase = bool(settings.supabase_url.strip()) and bool(
+        settings.supabase_service_role_key.strip()
+    )
+    if has_supabase and authorization and authorization.startswith("Bearer "):
+        return
+
     if not x_api_key or not hmac.compare_digest(x_api_key, expected):
         raise HTTPException(status_code=401, detail="Invalid or missing API key.")
 

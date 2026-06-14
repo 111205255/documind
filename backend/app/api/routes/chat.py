@@ -41,13 +41,14 @@ def chat(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> ChatResponse:
     """
     Ask a question against an indexed document (Blueprint Step 4 → Step 5 UI).
 
     Returns answer text plus page citations from retrieved chunks.
     """
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_gemini(settings)
     document_id = body.validated_document_id()
     require_document_access(settings, document_id, user_id)
@@ -72,13 +73,14 @@ def general_chat(
     settings: Settings = Depends(settings_dep),
     user_id: str | None = Depends(user_dep),
     x_api_key: str | None = Header(default=None, alias="X-API-Key"),
+    authorization: str | None = Header(default=None),
 ) -> GeneralChatResponse:
     """
     Document-less ("normal") chat with the AI assistant.
 
     Requires a signed-in user in production but does not touch any document index.
     """
-    verify_api_key(settings, x_api_key)
+    verify_api_key(settings, x_api_key, authorization)
     require_gemini(settings)
     if settings.require_auth and not user_id:
         raise HTTPException(status_code=401, detail="Sign in required.")
