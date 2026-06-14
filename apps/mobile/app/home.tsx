@@ -160,7 +160,13 @@ export default function HomeScreen() {
   const renderItem: ListRenderItem<DocumentListItem> = ({ item, index }) => (
     <DocumentCard
       title={item.title}
-      subtitle={`${item.pageCount} pages · ${item.relativeTime}`}
+      subtitle={
+        item.status === "failed"
+          ? `Indexing failed · tap to retry`
+          : item.status === "processing"
+            ? `Indexing…`
+            : `${item.pageCount} pages · ${item.relativeTime}`
+      }
       index={index}
       onPress={() => openDocument(item)}
       onLongPress={() => openDocumentDetails(item)}

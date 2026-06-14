@@ -101,7 +101,7 @@ export async function pickAndUploadDocument(
 
   const { data: updated, error: updateError } = await supabase
     .from("documents")
-    .update({ status: "ready" })
+    .update({ status: "processing" })
     .eq("id", documentId)
     .select("*")
     .single();
@@ -149,7 +149,7 @@ export async function uploadUrlDocument(url: string): Promise<DocumentRow> {
       storage_path: storagePath,
       file_size_bytes: null,
       page_count: 0,
-      status: "ready",
+      status: "processing",
     })
     .select("*")
     .single();
