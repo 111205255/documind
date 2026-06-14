@@ -54,7 +54,8 @@ if ($LASTEXITCODE -ne 0) { throw 'Web Vercel deploy failed' }
 Pop-Location
 
 Push-Location (Join-Path $Root 'apps\mobile')
-Set-VercelEnv 'EXPO_PUBLIC_API_URL' $ApiUrl
+# Route mobile API calls through the app origin (Vercel rewrite → Render backend).
+Set-VercelEnv 'EXPO_PUBLIC_API_URL' 'https://documind-app-two.vercel.app'
 & vercel --prod --yes 2>&1 | Write-Host
 if ($LASTEXITCODE -ne 0) { throw 'Mobile Vercel deploy failed' }
 Pop-Location
